@@ -25,7 +25,7 @@ export interface CallFrame {
   codeType?: string | undefined;
 }
 
-interface RawProfile {
+export interface RawProfile {
   id: string;
   pid: number | undefined;
   tid: number | undefined;
@@ -226,32 +226,30 @@ function resolveTarget(
   return target;
 }
 
+/** Non-idle sampled time on a profile — used to pick the busiest (main) thread. */
+function activeTime(p: RawProfile): number {
+  let sum = 0;
+  const n = Math.min(p.samples.length, p.deltas.length);
+  for (let i = 0; i < n; i++) {
+    const fn = p.frames.get(p.samples[i] ?? -1)?.functionName ?? '';
+    if (fn !== '(idle)') sum += p.deltas[i] ?? 0;
+  }
+  return sum;
+}
+
 /**
- * Build the JS-attribution model from the collected profiles. Picks the
- * busiest thread (the renderer main thread) and ranks functions by self-time.
+ * The renderer main thread's profile: prefer the renderer process (where the
+ * frames came from) so a busy browser-extension profile can't win, then take
+ * the thread with the most working (non-idle) time.
  */
-export function buildProfileModel(
+function pickMainProfile(
   profiles: RawProfile[],
-  options: ProfileModelOptions = {},
-): ProfileModel | null {
+  mainPid: number | undefined,
+): RawProfile | null {
   if (profiles.length === 0) return null;
-
-  // Prefer profiles from the renderer process (where the frames came from), so
-  // a busy browser-extension profile can't win.
-  const sameProcess = profiles.filter((p) => p.pid === options.mainPid);
+  const sameProcess = profiles.filter((p) => p.pid === mainPid);
   const candidates =
-    options.mainPid !== undefined && sameProcess.length > 0 ? sameProcess : profiles;
-
-  // Among those, pick the thread with the most *working* (non-idle) time.
-  const activeTime = (p: RawProfile): number => {
-    let sum = 0;
-    const n = Math.min(p.samples.length, p.deltas.length);
-    for (let i = 0; i < n; i++) {
-      const fn = p.frames.get(p.samples[i] ?? -1)?.functionName ?? '';
-      if (fn !== '(idle)') sum += p.deltas[i] ?? 0;
-    }
-    return sum;
-  };
+    mainPid !== undefined && sameProcess.length > 0 ? sameProcess : profiles;
   let main = candidates[0]!;
   let mainActive = activeTime(main);
   for (const p of candidates.slice(1)) {
@@ -261,6 +259,39 @@ export function buildProfileModel(
       mainActive = a;
     }
   }
+  return main;
+}
+
+/**
+ * Absolute per-sample timestamps in time order. V8 emits some out-of-order
+ * samples (negative deltas); reconstructing then sorting lets callers charge
+ * each non-negative inter-sample gap to the sample running during it, instead
+ * of letting negatives subtract from a function's total.
+ */
+function buildTimeline(main: RawProfile): { tsArr: Float64Array; order: number[] } {
+  const n = Math.min(main.samples.length, main.deltas.length);
+  const tsArr = new Float64Array(n);
+  let acc = main.startUs;
+  for (let i = 0; i < n; i++) {
+    acc += main.deltas[i] ?? 0;
+    tsArr[i] = acc;
+  }
+  const order = Array.from({ length: n }, (_, i) => i).sort(
+    (a, b) => (tsArr[a] ?? 0) - (tsArr[b] ?? 0),
+  );
+  return { tsArr, order };
+}
+
+/**
+ * Build the JS-attribution model from the collected profiles. Picks the
+ * busiest thread (the renderer main thread) and ranks functions by self-time.
+ */
+export function buildProfileModel(
+  profiles: RawProfile[],
+  options: ProfileModelOptions = {},
+): ProfileModel | null {
+  const main = pickMainProfile(profiles, options.mainPid);
+  if (!main) return null;
 
   const warmupEndUs = options.warmupEndUs ?? 0;
   const analysisStartUs = Math.max(warmupEndUs, main.startUs);
@@ -273,20 +304,9 @@ export function buildProfileModel(
   let jsUs = 0;
   let sampleCount = 0;
 
-  // V8 emits some slightly out-of-order samples (negative deltas). Reconstruct
-  // absolute timestamps, sort samples by time, then charge each non-negative
-  // inter-sample gap to the sample running during it. This nets out the
-  // disorder instead of letting negatives subtract from a function's total.
-  const n = Math.min(main.samples.length, main.deltas.length);
-  const tsArr = new Float64Array(n);
-  let acc = main.startUs;
-  for (let i = 0; i < n; i++) {
-    acc += main.deltas[i] ?? 0;
-    tsArr[i] = acc;
-  }
-  const order = Array.from({ length: n }, (_, i) => i).sort(
-    (a, b) => (tsArr[a] ?? 0) - (tsArr[b] ?? 0),
-  );
+  // Charge each non-negative inter-sample gap to the sample running during it,
+  // in time order (V8 emits some out-of-order samples — see buildTimeline).
+  const { tsArr, order } = buildTimeline(main);
 
   for (let k = 0; k < order.length; k++) {
     const i = order[k] ?? 0;
@@ -345,4 +365,83 @@ export function buildProfileModel(
     jsMs,
     functions,
   };
+}
+
+export interface AllocatorSuspect {
+  functionName: string;
+  url: string;
+  line: number;
+  /** JS self-time charged inside the pre-GC windows (ms). */
+  preGcMs: number;
+  /** Share of attributed pre-GC JS self-time. */
+  sharePct: number;
+  app: boolean;
+}
+
+/**
+ * Heuristic allocation attribution. Given the mutator windows that filled the
+ * nursery before each scavenge (`[startUs, endUs)`, disjoint and time-ordered),
+ * charge JS self-time to the leaf function running in each. Aggregated across
+ * windows, the function consistently hot just before GC is the likely heavy
+ * allocator.
+ *
+ * This is a correlation, not proof: a scavenge fires on whichever allocation
+ * crosses the new-space limit, not necessarily the biggest allocator. Treat the
+ * result as a lead and confirm with a sampling heap profiler when it matters.
+ */
+export function correlateAllocators(
+  profiles: RawProfile[],
+  windows: Array<{ startUs: number; endUs: number }>,
+  options: { warmupEndUs?: number; mainPid?: number; top?: number } = {},
+): AllocatorSuspect[] {
+  const main = pickMainProfile(profiles, options.mainPid);
+  if (!main) return [];
+  const warmupEndUs = options.warmupEndUs ?? 0;
+  const wins = windows
+    .filter((w) => w.endUs > w.startUs && w.endUs > warmupEndUs)
+    .sort((a, b) => a.startUs - b.startUs);
+  if (wins.length === 0) return [];
+
+  const { tsArr, order } = buildTimeline(main);
+  const memo = new Map<number, Target>();
+  const selfUs = new Map<string, AllocatorSuspect>();
+  let totalUs = 0;
+  let wi = 0;
+
+  for (let k = 0; k < order.length; k++) {
+    const i = order[k] ?? 0;
+    const tStart = tsArr[i] ?? 0;
+    const tNext = k + 1 < order.length ? (tsArr[order[k + 1] ?? 0] ?? tStart) : tStart;
+    const dt = Math.max(0, tNext - tStart);
+    if (dt === 0) continue;
+    // Advance past windows that already ended at or before this sample.
+    while (wi < wins.length && (wins[wi]?.endUs ?? 0) <= tStart) wi++;
+    if (wi >= wins.length) break;
+    // Sample sits in a gap before the next window — skip without advancing.
+    if (tStart < (wins[wi]?.startUs ?? 0)) continue;
+
+    const target = resolveTarget(main, main.samples[i] ?? -1, memo);
+    if (target.kind !== 'js') continue;
+    totalUs += dt;
+    const existing = selfUs.get(target.key);
+    if (existing) {
+      existing.preGcMs += dt / 1000;
+    } else {
+      selfUs.set(target.key, {
+        functionName: target.fn,
+        url: target.url,
+        line: target.line,
+        preGcMs: dt / 1000,
+        sharePct: 0,
+        app: target.app,
+      });
+    }
+  }
+
+  const totalMs = totalUs / 1000;
+  const keyOf = (f: AllocatorSuspect) => `${f.functionName}@${f.url}:${f.line}`;
+  return [...selfUs.values()]
+    .map((f) => ({ ...f, sharePct: totalMs > 0 ? (f.preGcMs / totalMs) * 100 : 0 }))
+    .sort((a, b) => b.preGcMs - a.preGcMs || (keyOf(a) < keyOf(b) ? -1 : 1))
+    .slice(0, options.top ?? 10);
 }

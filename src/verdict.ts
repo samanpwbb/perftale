@@ -1,4 +1,5 @@
 import type { FrameModel } from './frames.ts';
+import type { GcModel } from './gc.ts';
 import type { ProfileModel } from './profile.ts';
 import { blockingTask, type TaskModel } from './tasks.ts';
 
@@ -39,6 +40,25 @@ export interface Hotspot {
   selfMs: number;
 }
 
+export interface GcVerdict {
+  /** Main-thread GC pause time (scavenge + mark-compact), ms. */
+  totalMs: number;
+  scavengeCount: number;
+  markCompactCount: number;
+  /** Scavenges per second — the allocation-churn rate. */
+  scavengeHz: number;
+  /** Young garbage reclaimed, MB ≈ short-lived allocation volume. */
+  youngFreedMB: number;
+  /** Heuristic likely allocator (JS hottest just before scavenges), if any. */
+  topSuspect: {
+    functionName: string;
+    url: string;
+    line: number;
+    preGcMs: number;
+    app: boolean;
+  } | null;
+}
+
 export interface Verdict {
   /** Zero dropped frames after warmup. */
   smooth: boolean;
@@ -53,6 +73,8 @@ export interface Verdict {
   worstFreeze: GapVerdict | null;
   /** The top first-party function to look at, if any. */
   topAppHotspot: Hotspot | null;
+  /** GC pressure summary, when the trace has v8.gc instrumentation. */
+  gc: GcVerdict | null;
   /** Caveats that should temper how the numbers are read. */
   notes: string[];
 }
@@ -66,6 +88,7 @@ export function buildVerdict(
   frames: FrameModel,
   profile: ProfileModel | null,
   tasks: TaskModel,
+  gc: GcModel | null = null,
 ): Verdict {
   const domainsMs: Record<Exclude<Bound, 'idle'>, number> = {
     animation: 0,
@@ -126,6 +149,43 @@ export function buildVerdict(
     );
   }
 
+  let gcVerdict: GcVerdict | null = null;
+  if (gc) {
+    const suspect = gc.suspectedAllocators[0] ?? null;
+    gcVerdict = {
+      totalMs: gc.totalGcMs,
+      scavengeCount: gc.scavengeCount,
+      markCompactCount: gc.markCompactCount,
+      scavengeHz: gc.scavengeHz,
+      youngFreedMB: gc.youngFreedBytes / 1e6,
+      topSuspect: suspect
+        ? {
+            functionName: suspect.functionName,
+            url: suspect.url,
+            line: suspect.line,
+            preGcMs: suspect.preGcMs,
+            app: suspect.app,
+          }
+        : null,
+    };
+    // Flag GC when it costs ~a frame or fires often enough to cause micro-stutter.
+    if (gc.totalGcMs >= 16 || gc.scavengeHz >= 2) {
+      const freed = gc.youngFreedBytes / 1e6;
+      let note =
+        `GC pressure: ${gc.scavengeCount} scavenge${gc.scavengeCount === 1 ? '' : 's'} ` +
+        `(${gc.scavengeHz.toFixed(1)}/s${freed >= 1 ? `, ~${freed.toFixed(0)}MB young garbage` : ''})` +
+        `${gc.markCompactCount > 0 ? ` + ${gc.markCompactCount} mark-compact` : ''} ` +
+        `cost ${gc.totalGcMs.toFixed(0)}ms of main-thread pauses.`;
+      if (suspect) {
+        note +=
+          ` Hottest JS before scavenges (heuristic): ${suspect.functionName} — ` +
+          `likely high allocation. Reduce per-frame allocations (pool/reuse objects); ` +
+          `confirm with a heap allocation profile.`;
+      }
+      notes.push(note);
+    }
+  }
+
   const smooth = frames.dropped === 0;
   const hz = frames.refresh.hz;
   let headline: string;
@@ -155,6 +215,7 @@ export function buildVerdict(
     largestGap,
     worstFreeze,
     topAppHotspot,
+    gc: gcVerdict,
     notes,
   };
 }

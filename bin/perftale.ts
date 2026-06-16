@@ -150,6 +150,53 @@ function report(
     }
   }
 
+  const gc = analysis.gc;
+  if (gc && gc.scavengeCount + gc.markCompactCount > 0) {
+    out.push('');
+    const freed = gc.youngFreedBytes / 1e6;
+    out.push(
+      `GC PRESSURE: ${gc.scavengeCount} scavenge${gc.scavengeCount === 1 ? '' : 's'} ` +
+        `(${gc.scavengeHz.toFixed(1)}/s, ${gc.scavengeMs.toFixed(0)}ms)` +
+        `${gc.markCompactCount > 0 ? ` + ${gc.markCompactCount} mark-compact (${gc.markCompactMs.toFixed(0)}ms)` : ''} ` +
+        `— ${gc.totalGcMs.toFixed(0)}ms of main-thread pauses`,
+    );
+    if (freed >= 1) {
+      out.push(
+        `  ~${freed.toFixed(0)}MB young garbage collected (short-lived allocation churn)`,
+      );
+    }
+    if (gc.suspectedAllocators.length > 0) {
+      out.push('');
+      out.push(
+        '  suspected allocators (JS hottest just before scavenges — heuristic; confirm with a heap allocation profile):',
+      );
+      const shown = debug ? gc.suspectedAllocators : gc.suspectedAllocators.slice(0, 5);
+      for (const s of shown) {
+        const tag = s.app ? 'APP' : '   ';
+        out.push(
+          `  ${s.preGcMs.toFixed(1).padStart(7)}ms ${s.sharePct.toFixed(0).padStart(3)}% ${tag}  ` +
+            `${s.functionName}  ${shortenUrl(s.url)}:${s.line}`,
+        );
+      }
+      if (!debug && gc.suspectedAllocators.length > shown.length) {
+        out.push(
+          `  … and ${gc.suspectedAllocators.length - shown.length} more (--debug)`,
+        );
+      }
+    }
+    if (debug && gc.pauses.length > 0) {
+      out.push('');
+      out.push('  longest pauses:');
+      for (const p of gc.pauses) {
+        const mb = p.freedBytes / 1e6;
+        out.push(
+          `    ${p.durMs.toFixed(1).padStart(6)}ms  at ${(p.startMs / 1000).toFixed(2)}s  ` +
+            `(${p.kind}${mb >= 1 ? `, ~${mb.toFixed(0)}MB freed` : ''})`,
+        );
+      }
+    }
+  }
+
   const prof = analysis.profile;
   if (prof && prof.functions.length > 0) {
     out.push('');

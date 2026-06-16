@@ -69,6 +69,24 @@ with timestamps. Each blocks the frame loop for its whole duration, so these are
 directly actionable. Match their timestamps against the dropped-frame clusters /
 freezes to see which jank each one caused.
 
+**GC PRESSURE** — garbage-collection cost and likely cause (present only when the
+trace has V8 GC instrumentation; `gc: null` otherwise).
+
+- `N scavenges (X/s, Yms) + M mark-compact … — Zms of main-thread pauses` — V8's
+  synchronous GC pauses on the main thread, from instrumented `MinorGC` (young-gen
+  scavenge) and `MajorGC` (old-gen mark-compact) events. This is more precise than
+  the sampled `Zms GC` in the JS section, and unlike it carries bytes freed.
+- `~NNNmb young garbage collected` — heap reclaimed by scavenges ≈ short-lived
+  allocation volume. A high scavenge rate (`/s`) reclaiming a lot of young garbage is
+  the classic game-loop GC-pressure signature: per-frame allocation churn.
+- `suspected allocators` — **a heuristic, not proof.** The JS hottest in the run-up to
+  each scavenge, aggregated; the function consistently busy just before GC is the
+  likely heavy allocator. A scavenge fires on whichever allocation crosses the
+  new-space limit, so treat these as leads. Rows use the same
+  `preGcMs share% APP fn file:line` layout as the JS section. For exact per-function
+  allocation, capture a sampling heap profile (DevTools → Memory → "Allocation
+  sampling") — that's the ground truth a performance trace can't give.
+
 **JS (self-time by function)** — which code to fix.
 
 - `active CPU … : Xms JS / Yms engine+native / Zms GC (idle …)` — of non-idle CPU,
@@ -96,6 +114,8 @@ freezes to see which jank each one caused.
    something cacheable, re-triangulating/re-measuring unchanged geometry, walking the
    whole scene graph. Dependency rows (pixi, motion, earcut, react) tell you _which
    subsystem_ is hot even when you can't edit it — often you reduce calls into it.
+   If **GC PRESSURE** shows a high scavenge rate, cross-reference its suspected
+   allocators with these hot functions and look for per-frame allocation to pool/reuse.
 5. **Map to source** in the repo (the trace gives bundled `file:line`; grep the
    function name to find the real source).
 6. **Propose and apply a fix**, then **re-record a trace and re-run** to confirm the

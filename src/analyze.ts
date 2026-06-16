@@ -1,4 +1,5 @@
 import { buildFrameModel, isFrameEvent, type FrameModel } from './frames.ts';
+import { buildGcModel, isGcEvent, type GcModel } from './gc.ts';
 import {
   ProfileCollector,
   buildProfileModel,
@@ -17,6 +18,8 @@ export interface Analysis {
   frames: FrameModel;
   profile: ProfileModel | null;
   tasks: TaskModel;
+  /** GC pressure + heuristic allocation attribution (null without v8.gc data). */
+  gc: GcModel | null;
   reduction: ReductionStats;
 }
 
@@ -44,6 +47,7 @@ export async function analyzeTrace(
   const reducer = new Reducer();
   const frameEvents: TraceEvent[] = [];
   const taskEvents: TraceEvent[] = [];
+  const gcEvents: TraceEvent[] = [];
   const profiles = new ProfileCollector();
   // The renderer process id, taken from the frame events, so JS attribution
   // selects the app's profile rather than a browser-extension one.
@@ -71,6 +75,8 @@ export async function analyzeTrace(
       taskEvents.push(event);
     } else if (isProfileEvent(event)) {
       profiles.add(event);
+    } else if (isGcEvent(event)) {
+      gcEvents.push(event);
     }
   }
 
@@ -84,12 +90,14 @@ export async function analyzeTrace(
   });
   const profile = buildProfileModel(profiles.list(), { ...warmup, ...pid });
   const tasks = buildTaskModel(taskEvents, { originUs, ...warmup, ...pid });
+  const gc = buildGcModel(gcEvents, profiles.list(), { originUs, ...warmup, ...pid });
 
   return {
-    verdict: buildVerdict(frames, profile, tasks),
+    verdict: buildVerdict(frames, profile, tasks, gc),
     frames,
     profile,
     tasks,
+    gc,
     reduction: reducer.finish(),
   };
 }
