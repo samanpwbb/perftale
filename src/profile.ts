@@ -84,9 +84,15 @@ function asString(v: unknown): string | undefined {
   return typeof v === 'string' ? v : undefined;
 }
 
-/** Dependency code rather than first-party source. */
+/** First-party source — not a dependency, browser extension, or injected tool. */
 function isAppCode(url: string): boolean {
-  return url !== '' && !/node_modules|\/\.vite\/|\/deps\//.test(url);
+  if (url === '') return false;
+  // React/Redux DevTools and other extensions inject scripts into the page
+  // (chrome-extension:// / moz-extension:// / safari-web-extension://).
+  if (/-extension:\/\//.test(url)) return false;
+  // bundled dependencies
+  if (/node_modules|\/\.vite\/|\/deps\//.test(url)) return false;
+  return true;
 }
 
 /** True for the CPU-profiler events the attribution model consumes. */

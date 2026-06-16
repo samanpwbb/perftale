@@ -12,6 +12,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { analyzeTrace, type Analysis } from '../src/analyze.ts';
 import { buildSummary, serializeSummary } from '../src/summary.ts';
+import { blockingTask } from '../src/tasks.ts';
 
 const USAGE = `perftale — Chrome trace → actionable insights
 
@@ -48,8 +49,16 @@ function report(
   elapsedMs: number,
   debug: boolean,
 ): string {
-  const { reduction: r, frames: f } = analysis;
+  const { reduction: r, frames: f, tasks } = analysis;
   const out: string[] = [];
+
+  // Resolve a [start,end] window against the long tasks: blocked vs idle.
+  const gapVerdict = (startMs: number, durMs: number): string => {
+    const block = blockingTask(tasks.longTasks, startMs, startMs + durMs);
+    return block
+      ? `main thread blocked by a ${block.durMs.toFixed(0)}ms task`
+      : 'idle — no long task';
+  };
 
   out.push(`perftale — ${file}`);
 
@@ -86,14 +95,20 @@ function report(
     `  dropped:       ${f.dropped} frames — ${f.droppedPct.toFixed(1)}% of attempted frames`,
   );
   if (f.dropped > 0) {
+    const block = blockingTask(
+      tasks.longTasks,
+      f.worstFreezeAtMs,
+      f.worstFreezeAtMs + f.worstFreezeMs,
+    );
+    const cause = block ? `, blocked by a ${block.durMs.toFixed(0)}ms task` : '';
     out.push(
       `  worst freeze:  ${f.worstFreezeMs.toFixed(1)}ms at ${(f.worstFreezeAtMs / 1000).toFixed(2)}s ` +
-        `(${f.jankGapCount} freeze${f.jankGapCount === 1 ? '' : 's'} from dropped frames)`,
+        `(${f.jankGapCount} freeze${f.jankGapCount === 1 ? '' : 's'} from dropped frames${cause})`,
     );
   }
   out.push(
     `  largest gap:   ${f.largestGapMs.toFixed(1)}ms at ${(f.largestGapAtMs / 1000).toFixed(2)}s ` +
-      `(idle or main-thread block — see tasks)`,
+      `(${gapVerdict(f.largestGapAtMs, f.largestGapMs)})`,
   );
   if (debug) {
     out.push(
@@ -110,6 +125,23 @@ function report(
       out.push(
         `    ${p.totalMs.toFixed(1).padStart(8)}ms  ${p.sharePct.toFixed(0).padStart(3)}%  ${p.label}`,
       );
+    }
+  }
+
+  if (tasks.longTasks.length > 0) {
+    out.push('');
+    out.push(
+      `LONG TASKS (>${tasks.longTaskMs}ms on main thread): ` +
+        `${tasks.longTaskCount} tasks, ${tasks.totalLongTaskMs.toFixed(0)}ms total`,
+    );
+    const shown = debug ? tasks.longTasks : tasks.longTasks.slice(0, 5);
+    for (const t of shown) {
+      out.push(
+        `  ${t.durMs.toFixed(1).padStart(8)}ms  at ${(t.startMs / 1000).toFixed(2)}s`,
+      );
+    }
+    if (!debug && tasks.longTasks.length > shown.length) {
+      out.push(`  … and ${tasks.longTasks.length - shown.length} more (--debug)`);
     }
   }
 

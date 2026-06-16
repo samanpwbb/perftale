@@ -2,6 +2,7 @@ import type { Analysis } from './analyze.ts';
 import type { FrameModel } from './frames.ts';
 import type { ProfileModel } from './profile.ts';
 import type { ReductionStats } from './reduce.ts';
+import type { TaskModel } from './tasks.ts';
 
 /** Bump when the summary shape changes in a way that invalidates saved artifacts. */
 export const SUMMARY_SCHEMA_VERSION = 1;
@@ -15,6 +16,7 @@ export interface Summary {
   trace: string;
   frames: FrameModel;
   profile: ProfileModel | null;
+  tasks: TaskModel;
   size: ReductionStats;
 }
 
@@ -24,6 +26,7 @@ export function buildSummary(trace: string, analysis: Analysis): Summary {
     trace,
     frames: analysis.frames,
     profile: analysis.profile,
+    tasks: analysis.tasks,
     size: analysis.reduction,
   };
 }

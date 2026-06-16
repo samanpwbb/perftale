@@ -215,7 +215,7 @@
         "col": 93979,
         "selfMs": 22.31700000000001,
         "sharePct": 1.107247242549016,
-        "app": true
+        "app": false
       },
       {
         "functionName": "set x",
@@ -317,6 +317,13 @@
         "app": false
       }
     ]
+  },
+  "tasks": {
+    "mainTid": 7773354,
+    "longTaskMs": 50,
+    "longTasks": [],
+    "longTaskCount": 0,
+    "totalLongTaskMs": 0
   },
   "size": {
     "total": 1731003,

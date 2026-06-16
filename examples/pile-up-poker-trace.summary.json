@@ -152,7 +152,7 @@
         "col": 93979,
         "selfMs": 11.650999999999998,
         "sharePct": 5.142430903136392,
-        "app": true
+        "app": false
       },
       {
         "functionName": "memoizedSelector",
@@ -197,7 +197,7 @@
         "col": 11964,
         "selfMs": 3.951,
         "sharePct": 1.7438627155001192,
-        "app": true
+        "app": false
       },
       {
         "functionName": "wrappedSelector",
@@ -242,7 +242,7 @@
         "col": 116995,
         "selfMs": 2.226,
         "sharePct": 0.9824951669712136,
-        "app": true
+        "app": false
       },
       {
         "functionName": "getTableauSize",
@@ -287,7 +287,7 @@
         "col": 12,
         "selfMs": 1.6769999999999996,
         "sharePct": 0.7401816689176662,
-        "app": true
+        "app": false
       },
       {
         "functionName": "(anonymous)",
@@ -350,9 +350,25 @@
         "col": 4926,
         "selfMs": 1.2770000000000001,
         "sharePct": 0.5636326721573405,
-        "app": true
+        "app": false
       }
     ]
+  },
+  "tasks": {
+    "mainTid": 7792766,
+    "longTaskMs": 50,
+    "longTasks": [
+      {
+        "startMs": 1768.183,
+        "durMs": 92.6
+      },
+      {
+        "startMs": 1202.777,
+        "durMs": 65.436
+      }
+    ],
+    "longTaskCount": 2,
+    "totalLongTaskMs": 158.036
   },
   "size": {
     "total": 435498,

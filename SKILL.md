@@ -43,12 +43,18 @@ DevTools → Performance → Record → reload/interact → Stop → "Save profi
   frames (idle vsyncs don't count against it).
 - `worst freeze` — longest screen-frozen span that actually contained dropped frames
   (real jank), with a timestamp.
-- `largest gap` — longest gap between presented frames _regardless of drops_. May be
-  benign idle (app had nothing to draw) OR a main-thread block. Cross-check with the
-  JS section / long tasks before treating it as jank.
+- `largest gap` — longest gap between presented frames _regardless of drops_, with a
+  verdict: `idle — no long task` (the app had nothing to draw; benign) or
+  `main thread blocked by a Nms task` (real — go find that task). `worst freeze` is
+  likewise annotated `blocked by a Nms task` when one explains it.
 - `main-thread frame time` — where the frame budget goes: `animation / rAF callbacks`,
   `style recalc`, `layout`, `paint`, `composite commit`, etc. This tells you the
   _domain_ of the problem (script vs layout vs paint vs compositing).
+
+**LONG TASKS** — main-thread tasks over the threshold (default 50ms), longest first,
+with timestamps. Each blocks the frame loop for its whole duration, so these are
+directly actionable. Match their timestamps against the dropped-frame clusters /
+freezes to see which jank each one caused.
 
 **JS (self-time by function)** — which code to fix.
 
