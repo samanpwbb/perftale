@@ -1,0 +1,414 @@
+{
+  "schemaVersion": 1,
+  "trace": "orb-ball-trace.json.gz",
+  "frames": {
+    "refresh": {
+      "hz": 60,
+      "intervalMs": 16.666666666666668,
+      "source": "detected",
+      "confidence": 1
+    },
+    "warmupMs": 412.337,
+    "windowMs": 6704.557,
+    "presented": 403,
+    "dropped": 0,
+    "droppedPct": 0,
+    "presentationFps": 60.10837106761864,
+    "worstFreezeMs": 0,
+    "worstFreezeAtMs": 0,
+    "jankGapCount": 0,
+    "largestGapMs": 22.109,
+    "largestGapAtMs": 3117.205,
+    "mainThread": [
+      {
+        "key": "animate_us",
+        "label": "animation / rAF callbacks",
+        "totalMs": 4246.961,
+        "sharePct": 95.31179271525751
+      },
+      {
+        "key": "layout_update_us",
+        "label": "layout",
+        "totalMs": 42.645,
+        "sharePct": 0.9570540912295065
+      },
+      {
+        "key": "update_layers_us",
+        "label": "update layers",
+        "totalMs": 39.57,
+        "sharePct": 0.8880438595369111
+      },
+      {
+        "key": "style_update_us",
+        "label": "style recalc",
+        "totalMs": 38.543,
+        "sharePct": 0.8649955642691727
+      },
+      {
+        "key": "prepaint_us",
+        "label": "pre-paint",
+        "totalMs": 38.529,
+        "sharePct": 0.8646813713443934
+      },
+      {
+        "key": "paint_us",
+        "label": "paint",
+        "totalMs": 30.797,
+        "sharePct": 0.6911571074591419
+      },
+      {
+        "key": "composite_commit_us",
+        "label": "composite commit",
+        "totalMs": 12.454,
+        "sharePct": 0.279497048942954
+      },
+      {
+        "key": "compositing_inputs_us",
+        "label": "compositing inputs",
+        "totalMs": 6.02,
+        "sharePct": 0.13510295765509742
+      },
+      {
+        "key": "handle_input_events_us",
+        "label": "input handlers",
+        "totalMs": 0.342,
+        "sharePct": 0.00767528430532281
+      }
+    ],
+    "pipelineLatencyMs": {
+      "p50": 40.66,
+      "p95": 41.652,
+      "max": 58.317
+    },
+    "droppedClusters": []
+  },
+  "profile": {
+    "tid": 7773354,
+    "sampleCount": 817176,
+    "activeMs": 5216.564,
+    "idleMs": 1480.809,
+    "gcMs": 136.984,
+    "nativeMs": 3064.041,
+    "jsMs": 2015.539,
+    "functions": [
+      {
+        "functionName": "_getGlobalBoundsRecursive",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
+        "line": 661,
+        "col": 28,
+        "selfMs": 112.22300000000008,
+        "sharePct": 5.567890276496763,
+        "app": false
+      },
+      {
+        "functionName": "updateLayout",
+        "url": "http://localhost:5173/node_modules/.vite/deps/@pixi_layout.js?v=200eec3e",
+        "line": 481,
+        "col": 15,
+        "selfMs": 92.69900000000001,
+        "sharePct": 4.599216388271326,
+        "app": false
+      },
+      {
+        "functionName": "updateTransformAndChildren",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-OKHOTB3R.js?v=200eec3e",
+        "line": 735,
+        "col": 36,
+        "selfMs": 82.19200000000012,
+        "sharePct": 4.07791662676833,
+        "app": false
+      },
+      {
+        "functionName": "sampleHeight",
+        "url": "http://localhost:5173/src/BattleScreen/render/terrain/elevationField.ts?t=1781587780948",
+        "line": 138,
+        "col": 19,
+        "selfMs": 77.92299999999993,
+        "sharePct": 3.8661122409439823,
+        "app": true
+      },
+      {
+        "functionName": "isEarHashed",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-KZO5MPJJ.js?v=200eec3e",
+        "line": 115,
+        "col": 21,
+        "selfMs": 47.75399999999999,
+        "sharePct": 2.3692917874573496,
+        "app": false
+      },
+      {
+        "functionName": "collectRenderables",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
+        "line": 419,
+        "col": 21,
+        "selfMs": 47.098000000000006,
+        "sharePct": 2.336744662345904,
+        "app": false
+      },
+      {
+        "functionName": "(anonymous)",
+        "url": "http://localhost:5173/src/BattleScreen/render/terrain/TerrainSpriteLayer.tsx?t=1781594641216",
+        "line": 190,
+        "col": 21,
+        "selfMs": 39.320000000000014,
+        "sharePct": 1.950842925887319,
+        "app": true
+      },
+      {
+        "functionName": "sortLinked",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-KZO5MPJJ.js?v=200eec3e",
+        "line": 258,
+        "col": 20,
+        "selfMs": 37.12200000000001,
+        "sharePct": 1.8417902109559778,
+        "app": false
+      },
+      {
+        "functionName": "set",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
+        "line": 93,
+        "col": 6,
+        "selfMs": 29.36200000000001,
+        "sharePct": 1.4567815358571583,
+        "app": false
+      },
+      {
+        "functionName": "collectRenderablesSimple",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
+        "line": 3112,
+        "col": 27,
+        "selfMs": 28.620999999999995,
+        "sharePct": 1.4200171765468192,
+        "app": false
+      },
+      {
+        "functionName": "(anonymous)",
+        "url": "http://localhost:5173/src/BattleScreen/render/creature/EntitySimRenderer.tsx?t=1781594641216",
+        "line": 91,
+        "col": 17,
+        "selfMs": 24.666000000000004,
+        "sharePct": 1.223791749998388,
+        "app": true
+      },
+      {
+        "functionName": "break",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-KZO5MPJJ.js?v=200eec3e",
+        "line": 1374,
+        "col": 8,
+        "selfMs": 22.481000000000005,
+        "sharePct": 1.1153840238268773,
+        "app": false
+      },
+      {
+        "functionName": "exports.jsxDEV",
+        "url": "http://localhost:5173/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=200eec3e",
+        "line": 239,
+        "col": 32,
+        "selfMs": 22.351000000000134,
+        "sharePct": 1.1089341362285787,
+        "app": false
+      },
+      {
+        "functionName": "measureHostInstance",
+        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
+        "line": 1,
+        "col": 93979,
+        "selfMs": 22.31700000000001,
+        "sharePct": 1.107247242549016,
+        "app": true
+      },
+      {
+        "functionName": "set x",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
+        "line": 197,
+        "col": 8,
+        "selfMs": 22.242000000000008,
+        "sharePct": 1.1035261535499936,
+        "app": false
+      },
+      {
+        "functionName": "positionBlade",
+        "url": "http://localhost:5173/src/BattleScreen/render/terrain/TerrainSpriteLayer.tsx?t=1781594641216",
+        "line": 233,
+        "col": 29,
+        "selfMs": 19.959,
+        "sharePct": 0.9902562044197606,
+        "app": true
+      },
+      {
+        "functionName": "(anonymous)",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-ZUSEKPXC.js?v=200eec3e",
+        "line": 1276,
+        "col": 37,
+        "selfMs": 19.73,
+        "sharePct": 0.9788944793427465,
+        "app": false
+      },
+      {
+        "functionName": "_updateSize",
+        "url": "http://localhost:5173/node_modules/.vite/deps/@pixi_layout.js?v=200eec3e",
+        "line": 446,
+        "col": 14,
+        "selfMs": 19.166,
+        "sharePct": 0.9509118900701004,
+        "app": false
+      },
+      {
+        "functionName": "updateRenderGroupTransforms",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-OKHOTB3R.js?v=200eec3e",
+        "line": 688,
+        "col": 37,
+        "selfMs": 18.227000000000004,
+        "sharePct": 0.9043238558023439,
+        "app": false
+      },
+      {
+        "functionName": "emit",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
+        "line": 2444,
+        "col": 7,
+        "selfMs": 17.231999999999996,
+        "sharePct": 0.854957408415317,
+        "app": false
+      },
+      {
+        "functionName": "lineTo",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-ZUSEKPXC.js?v=200eec3e",
+        "line": 2896,
+        "col": 9,
+        "selfMs": 16.206999999999994,
+        "sharePct": 0.8041025254286815,
+        "app": false
+      },
+      {
+        "functionName": "_callContextMethod",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-HBPTRB7F.js?v=200eec3e",
+        "line": 1388,
+        "col": 21,
+        "selfMs": 16.097,
+        "sharePct": 0.7986449282301161,
+        "app": false
+      },
+      {
+        "functionName": "prepareFreshStack",
+        "url": "http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=200eec3e",
+        "line": 12095,
+        "col": 33,
+        "selfMs": 15.1330000000003,
+        "sharePct": 0.7508165309627003,
+        "app": false
+      },
+      {
+        "functionName": "break",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-OKHOTB3R.js?v=200eec3e",
+        "line": 1075,
+        "col": 8,
+        "selfMs": 14.797999999999996,
+        "sharePct": 0.7341956667670532,
+        "app": false
+      },
+      {
+        "functionName": "resetTransform",
+        "url": "http://localhost:5173/node_modules/.vite/deps/motion_react.js?v=200eec3e",
+        "line": 7720,
+        "col": 19,
+        "selfMs": 14.573999999999991,
+        "sharePct": 0.7230820142899737,
+        "app": false
+      }
+    ]
+  },
+  "size": {
+    "total": 1731003,
+    "kept": 170892,
+    "dropped": 1560111,
+    "droppedByReason": {
+      "inspector": 1558293,
+      "metadata": 38,
+      "source-rundown": 1780
+    },
+    "keptByCategory": [
+      {
+        "cat": "disabled-by-default-devtools.timeline",
+        "count": 50904
+      },
+      {
+        "cat": "devtools.timeline",
+        "count": 46206
+      },
+      {
+        "cat": "blink.user_timing",
+        "count": 21858
+      },
+      {
+        "cat": "cc,benchmark,disabled-by-default-devtools.timeline.frame",
+        "count": 20050
+      },
+      {
+        "cat": "v8",
+        "count": 10205
+      },
+      {
+        "cat": "disabled-by-default-v8.cpu_profiler",
+        "count": 8301
+      },
+      {
+        "cat": "devtools.timeline,disabled-by-default-v8.gc",
+        "count": 4565
+      },
+      {
+        "cat": "disabled-by-default-devtools.timeline.frame",
+        "count": 2061
+      },
+      {
+        "cat": "v8.execute",
+        "count": 2033
+      },
+      {
+        "cat": "blink,devtools.timeline",
+        "count": 1576
+      },
+      {
+        "cat": "blink,rail",
+        "count": 806
+      },
+      {
+        "cat": "cppgc",
+        "count": 696
+      },
+      {
+        "cat": "benchmark,rail",
+        "count": 403
+      },
+      {
+        "cat": "disabled-by-default-devtools.screenshot",
+        "count": 403
+      },
+      {
+        "cat": "cc,disabled-by-default-devtools.timeline",
+        "count": 386
+      },
+      {
+        "cat": "blink,benchmark,rail,disabled-by-default-blink.debug.layout",
+        "count": 290
+      },
+      {
+        "cat": "benchmark,latencyInfo,rail,input.scrolling",
+        "count": 105
+      },
+      {
+        "cat": "devtools.timeline,v8",
+        "count": 39
+      },
+      {
+        "cat": "loading",
+        "count": 3
+      },
+      {
+        "cat": "navigation",
+        "count": 2
+      }
+    ],
+    "timeSpanMs": 7098.968
+  }
+}

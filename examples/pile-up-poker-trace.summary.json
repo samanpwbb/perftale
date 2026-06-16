@@ -1,0 +1,466 @@
+{
+  "schemaVersion": 1,
+  "trace": "pile-up-poker-trace.json.gz",
+  "frames": {
+    "refresh": {
+      "hz": 60,
+      "intervalMs": 16.666666666666668,
+      "source": "detected",
+      "confidence": 1
+    },
+    "warmupMs": 198.959,
+    "windowMs": 7717.601,
+    "presented": 306,
+    "dropped": 14,
+    "droppedPct": 4.375,
+    "presentationFps": 39.64962687239208,
+    "worstFreezeMs": 422.011,
+    "worstFreezeAtMs": 2234.655,
+    "jankGapCount": 7,
+    "largestGapMs": 505.249,
+    "largestGapAtMs": 4483.189,
+    "mainThread": [
+      {
+        "key": "animate_us",
+        "label": "animation / rAF callbacks",
+        "totalMs": 153.663,
+        "sharePct": 39.13196274819891
+      },
+      {
+        "key": "composite_commit_us",
+        "label": "composite commit",
+        "totalMs": 139.322,
+        "sharePct": 35.479870326653575
+      },
+      {
+        "key": "handle_input_events_us",
+        "label": "input handlers",
+        "totalMs": 27.094,
+        "sharePct": 6.899783283547121
+      },
+      {
+        "key": "style_update_us",
+        "label": "style recalc",
+        "totalMs": 23.919,
+        "sharePct": 6.091234825391732
+      },
+      {
+        "key": "paint_us",
+        "label": "paint",
+        "totalMs": 16.018,
+        "sharePct": 4.0791588040104
+      },
+      {
+        "key": "update_layers_us",
+        "label": "update layers",
+        "totalMs": 15.889,
+        "sharePct": 4.04630754382078
+      },
+      {
+        "key": "prepaint_us",
+        "label": "pre-paint",
+        "totalMs": 9.747,
+        "sharePct": 2.482180101304119
+      },
+      {
+        "key": "layout_update_us",
+        "label": "layout",
+        "totalMs": 4.883,
+        "sharePct": 1.243509329503233
+      },
+      {
+        "key": "compositing_inputs_us",
+        "label": "compositing inputs",
+        "totalMs": 2.144,
+        "sharePct": 0.5459930375701272
+      }
+    ],
+    "pipelineLatencyMs": {
+      "p50": 40.662,
+      "p95": 58.223,
+      "max": 108.247
+    },
+    "droppedClusters": [
+      {
+        "startMs": 1216.043,
+        "endMs": 1249.104,
+        "count": 3
+      },
+      {
+        "startMs": 1800.084,
+        "endMs": 1833.422,
+        "count": 3
+      },
+      {
+        "startMs": 2615.909,
+        "endMs": 2632.579,
+        "count": 2
+      },
+      {
+        "startMs": 2732.595,
+        "endMs": 2732.595,
+        "count": 1
+      },
+      {
+        "startMs": 3816.992,
+        "endMs": 3816.992,
+        "count": 1
+      },
+      {
+        "startMs": 5033.801,
+        "endMs": 5033.801,
+        "count": 1
+      },
+      {
+        "startMs": 5616.265,
+        "endMs": 5650.32,
+        "count": 3
+      }
+    ]
+  },
+  "profile": {
+    "tid": 7792766,
+    "sampleCount": 247112,
+    "activeMs": 1288.411,
+    "idleMs": 6432.13,
+    "gcMs": 74.757,
+    "nativeMs": 987.088,
+    "jsMs": 226.566,
+    "functions": [
+      {
+        "functionName": "memoized",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-4T7UYGQA.js?v=94c64cfa",
+        "line": 534,
+        "col": 20,
+        "selfMs": 43.18300000000004,
+        "sharePct": 19.059788317752904,
+        "app": false
+      },
+      {
+        "functionName": "React.useCallback",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-redux.js?v=ed083144",
+        "line": 1020,
+        "col": 24,
+        "selfMs": 15.839000000000008,
+        "sharePct": 6.990898899217009,
+        "app": false
+      },
+      {
+        "functionName": "measureHostInstance",
+        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
+        "line": 1,
+        "col": 93979,
+        "selfMs": 11.650999999999998,
+        "sharePct": 5.142430903136392,
+        "app": true
+      },
+      {
+        "functionName": "memoizedSelector",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-redux.js?v=ed083144",
+        "line": 27,
+        "col": 38,
+        "selfMs": 7.850999999999999,
+        "sharePct": 3.465215433913296,
+        "app": false
+      },
+      {
+        "functionName": "renderHTML",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-PNI2FNV6.js?v=94c64cfa",
+        "line": 6065,
+        "col": 20,
+        "selfMs": 6.412999999999993,
+        "sharePct": 2.830521790559922,
+        "app": false
+      },
+      {
+        "functionName": "exports.jsxDEV",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=7f853c5a",
+        "line": 240,
+        "col": 32,
+        "selfMs": 5.436999999999973,
+        "sharePct": 2.399742238464718,
+        "app": false
+      },
+      {
+        "functionName": "getState",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/@reduxjs_toolkit.js?v=79e432cb",
+        "line": 120,
+        "col": 20,
+        "selfMs": 4.459,
+        "sharePct": 1.9680799413857328,
+        "app": false
+      },
+      {
+        "functionName": "performAction",
+        "url": "chrome-extension://lmhkpmbekcpmknklioeibfkpmmfibljd/page.bundle.js",
+        "line": 1,
+        "col": 11964,
+        "selfMs": 3.951,
+        "sharePct": 1.7438627155001192,
+        "app": true
+      },
+      {
+        "functionName": "wrappedSelector",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/createDraftSafeSelector.ts",
+        "line": 7,
+        "col": 29,
+        "selfMs": 3.6079999999999997,
+        "sharePct": 1.5924719507781393,
+        "app": true
+      },
+      {
+        "functionName": "getTheme",
+        "url": "http://localhost:3000/pile-up-poker/engine/selectors.ts",
+        "line": 8,
+        "col": 25,
+        "selfMs": 3.5869999999999997,
+        "sharePct": 1.5832031284482226,
+        "app": true
+      },
+      {
+        "functionName": "collectInputSelectorResults",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-4T7UYGQA.js?v=94c64cfa",
+        "line": 91,
+        "col": 37,
+        "selfMs": 2.7669999999999995,
+        "sharePct": 1.2212776850895544,
+        "app": false
+      },
+      {
+        "functionName": "getWidth",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/deckSelectors.ts",
+        "line": 15,
+        "col": 25,
+        "selfMs": 2.574,
+        "sharePct": 1.136092794152697,
+        "app": true
+      },
+      {
+        "functionName": "updateFiberRecursively",
+        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
+        "line": 1,
+        "col": 116995,
+        "selfMs": 2.226,
+        "sharePct": 0.9824951669712136,
+        "app": true
+      },
+      {
+        "functionName": "getTableauSize",
+        "url": "http://localhost:3000/pile-up-poker/engine/selectors.ts",
+        "line": 11,
+        "col": 31,
+        "selfMs": 2.154,
+        "sharePct": 0.950716347554355,
+        "app": true
+      },
+      {
+        "functionName": "getTheme",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/sharedStore.ts",
+        "line": 7,
+        "col": 25,
+        "selfMs": 1.871,
+        "sharePct": 0.8258079323464245,
+        "app": true
+      },
+      {
+        "functionName": "useSelector2",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-redux.js?v=ed083144",
+        "line": 1000,
+        "col": 24,
+        "selfMs": 1.737999999999998,
+        "sharePct": 0.7671053909236152,
+        "app": false
+      },
+      {
+        "functionName": "setValueForStyle",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-dom_client.js?v=fdb207b4",
+        "line": 2213,
+        "col": 32,
+        "selfMs": 1.682,
+        "sharePct": 0.7423885313771704,
+        "app": false
+      },
+      {
+        "functionName": "pe",
+        "url": "chrome-extension://dlkffcaaoccbofklocbjcmppahjjboce/inject/index.js",
+        "line": 2110,
+        "col": 12,
+        "selfMs": 1.6769999999999996,
+        "sharePct": 0.7401816689176662,
+        "app": true
+      },
+      {
+        "functionName": "(anonymous)",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-redux.js?v=ed083144",
+        "line": 379,
+        "col": 24,
+        "selfMs": 1.56,
+        "sharePct": 0.6885410873652711,
+        "app": false
+      },
+      {
+        "functionName": "dependenciesChecker",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-4T7UYGQA.js?v=94c64cfa",
+        "line": 638,
+        "col": 62,
+        "selfMs": 1.4339999999999997,
+        "sharePct": 0.6329281533857682,
+        "app": false
+      },
+      {
+        "functionName": "isNestedFrozen",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/@reduxjs_toolkit.js?v=79e432cb",
+        "line": 704,
+        "col": 24,
+        "selfMs": 1.3890000000000005,
+        "sharePct": 0.6130663912502319,
+        "app": false
+      },
+      {
+        "functionName": "(anonymous)",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/deckSelectors.ts",
+        "line": 154,
+        "col": 217,
+        "selfMs": 1.385,
+        "sharePct": 0.6113009012826285,
+        "app": true
+      },
+      {
+        "functionName": "(anonymous)",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-dom_client.js?v=fdb207b4",
+        "line": 4638,
+        "col": 34,
+        "selfMs": 1.3010000000000002,
+        "sharePct": 0.5742256119629601,
+        "app": false
+      },
+      {
+        "functionName": "getHeight",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/deckSelectors.ts",
+        "line": 16,
+        "col": 26,
+        "selfMs": 1.298,
+        "sharePct": 0.5729014944872576,
+        "app": true
+      },
+      {
+        "functionName": "Or",
+        "url": "chrome-extension://lmhkpmbekcpmknklioeibfkpmmfibljd/page.bundle.js",
+        "line": 3,
+        "col": 4926,
+        "selfMs": 1.2770000000000001,
+        "sharePct": 0.5636326721573405,
+        "app": true
+      }
+    ]
+  },
+  "size": {
+    "total": 435498,
+    "kept": 78572,
+    "dropped": 356926,
+    "droppedByReason": {
+      "inspector": 356306,
+      "metadata": 30,
+      "source-rundown": 590
+    },
+    "keptByCategory": [
+      {
+        "cat": "disabled-by-default-devtools.timeline",
+        "count": 36181
+      },
+      {
+        "cat": "cc,benchmark,disabled-by-default-devtools.timeline.frame",
+        "count": 13940
+      },
+      {
+        "cat": "devtools.timeline",
+        "count": 12617
+      },
+      {
+        "cat": "v8",
+        "count": 4419
+      },
+      {
+        "cat": "disabled-by-default-v8.cpu_profiler",
+        "count": 2678
+      },
+      {
+        "cat": "disabled-by-default-devtools.timeline.frame",
+        "count": 1964
+      },
+      {
+        "cat": "devtools.timeline,disabled-by-default-v8.gc",
+        "count": 1638
+      },
+      {
+        "cat": "v8.execute",
+        "count": 1109
+      },
+      {
+        "cat": "blink,devtools.timeline",
+        "count": 638
+      },
+      {
+        "cat": "benchmark,latencyInfo,rail,input.scrolling",
+        "count": 505
+      },
+      {
+        "cat": "cppgc",
+        "count": 474
+      },
+      {
+        "cat": "blink,rail",
+        "count": 457
+      },
+      {
+        "cat": "cc,disabled-by-default-devtools.timeline",
+        "count": 408
+      },
+      {
+        "cat": "disabled-by-default-devtools.screenshot",
+        "count": 318
+      },
+      {
+        "cat": "benchmark,rail",
+        "count": 317
+      },
+      {
+        "cat": "loading",
+        "count": 296
+      },
+      {
+        "cat": "input,rail",
+        "count": 190
+      },
+      {
+        "cat": "renderer,benchmark,rail,input.scrolling",
+        "count": 190
+      },
+      {
+        "cat": "blink.animations,devtools.timeline,benchmark,rail",
+        "count": 142
+      },
+      {
+        "cat": "blink,benchmark,rail,disabled-by-default-blink.debug.layout",
+        "count": 63
+      },
+      {
+        "cat": "navigation",
+        "count": 14
+      },
+      {
+        "cat": "blink.user_timing",
+        "count": 6
+      },
+      {
+        "cat": "devtools.timeline,v8",
+        "count": 6
+      },
+      {
+        "cat": "loading,rail,devtools.timeline",
+        "count": 2
+      }
+    ],
+    "timeSpanMs": 7921.949
+  }
+}
