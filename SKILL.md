@@ -87,6 +87,23 @@ trace has V8 GC instrumentation; `gc: null` otherwise).
   allocation, capture a sampling heap profile (DevTools → Memory → "Allocation
   sampling") — that's the ground truth a performance trace can't give.
 
+**REACT (component renders, measured by React DevTools)** — which components
+re-render, and how often (present only when the trace was recorded with React
+DevTools attached, i.e. local dev; `react: null` otherwise). This is React's own
+emitted timing, not a heuristic — names come from the React/DevTools team's User
+Timing measures, so there is no internal-function name list to drift.
+
+- `N renders across M components, Xms wall-clock` — total component-render spans in
+  the window. A render count far above the frame count means components are
+  re-rendering many times per frame.
+- Each row: `selfMs  ×renders  component`. `selfMs` is the component's own render
+  time (excluding nested child components); `×renders` is how many times it rendered.
+  **A high `×renders` is the usual React perf smell** — an unmemoized component (or
+  bad state placement / unstable props) re-rendering on every frame. Sort-by-self
+  surfaces the genuinely expensive renders; sort-by-count surfaces the thrashy ones.
+- Caveat: DevTools recording adds overhead, so these ms are inflated vs a clean
+  capture — read the **counts** as the primary signal and the ms as relative.
+
 **JS (self-time by function)** — which code to fix.
 
 - `active CPU … : Xms JS / Yms engine+native / Zms GC (idle …)` — of non-idle CPU,
@@ -116,9 +133,15 @@ trace has V8 GC instrumentation; `gc: null` otherwise).
    subsystem_ is hot even when you can't edit it — often you reduce calls into it.
    If **GC PRESSURE** shows a high scavenge rate, cross-reference its suspected
    allocators with these hot functions and look for per-frame allocation to pool/reuse.
-5. **Map to source** in the repo (the trace gives bundled `file:line`; grep the
+5. **For React UIs:** if the **REACT** section is present, check `×renders` first — a
+   component rendering many times per frame is almost always the problem (memoize it,
+   move state down, stabilize props/context). Then check `selfMs` for components whose
+   individual render is expensive. Cross-reference heavy components against the
+   layout/paint domain — a thrashing React tree usually shows up as `style recalc` /
+   `layout` in the frame budget too.
+6. **Map to source** in the repo (the trace gives bundled `file:line`; grep the
    function name to find the real source).
-6. **Propose and apply a fix**, then **re-record a trace and re-run** to confirm the
+7. **Propose and apply a fix**, then **re-record a trace and re-run** to confirm the
    dropped-frame count / hot-function self-time actually improved.
 
 ## Fix playbooks

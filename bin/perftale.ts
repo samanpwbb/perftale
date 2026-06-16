@@ -197,6 +197,27 @@ function report(
     }
   }
 
+  const react = analysis.react;
+  if (react && react.components.length > 0) {
+    out.push('');
+    out.push('REACT (component renders, measured by React DevTools)');
+    out.push(
+      `  ${react.renderCount} renders across ${react.componentCount} components, ` +
+        `${react.totalRenderMs.toFixed(1)}ms wall-clock`,
+    );
+    out.push('');
+    out.push('     self  ×renders  component');
+    const shown = debug ? react.components : react.components.slice(0, 10);
+    for (const c of shown) {
+      out.push(
+        `  ${c.selfMs.toFixed(1).padStart(7)}ms ${`×${c.count}`.padStart(8)}  ${c.name}`,
+      );
+    }
+    if (!debug && react.components.length > shown.length) {
+      out.push(`  … and ${react.components.length - shown.length} more (--debug)`);
+    }
+  }
+
   const prof = analysis.profile;
   if (prof && prof.functions.length > 0) {
     out.push('');

@@ -1,15 +1,15 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "trace": "orb-ball.trace.json.gz",
   "verdict": {
     "smooth": true,
     "headline": "Smooth at 60fps (0 dropped frames) — but 96% of main-thread frame time is animation; running close to budget.",
     "bound": "animation",
-    "boundSharePct": 96.24836578721543,
+    "boundSharePct": 96.15705268842608,
     "domainsMs": {
-      "animation": 167.117,
-      "layout": 3.8550000000000004,
-      "paint/composite": 2.659
+      "animation": 569.769,
+      "layout": 13.123999999999999,
+      "paint/composite": 9.647
     },
     "largestGap": {
       "ms": 19.739,
@@ -22,26 +22,41 @@
       "functionName": "sampleHeight",
       "url": "http://localhost:5173/src/BattleScreen/render/terrain/elevationField.ts?t=1781587780948",
       "line": 138,
-      "selfMs": 2.546
+      "selfMs": 10.939
     },
     "gc": {
-      "totalMs": 12.832,
-      "scavengeCount": 1,
+      "totalMs": 26.384,
+      "scavengeCount": 5,
       "markCompactCount": 1,
-      "scavengeHz": 15.549923027881011,
+      "scavengeHz": 5.525594553974008,
       "youngFreedMB": 0,
       "topSuspect": {
-        "functionName": "isCircleInsidePerimeter",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/boardShape.ts",
-        "line": 302,
-        "preGcMs": 1.078,
-        "app": true
+        "functionName": "_getGlobalBoundsRecursive",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
+        "line": 661,
+        "preGcMs": 6.780000000000002,
+        "app": false
+      }
+    },
+    "react": {
+      "renderCount": 1023,
+      "componentCount": 10,
+      "totalRenderMs": 133.7009999999999,
+      "topComponent": {
+        "name": "ForwardRef(motion.div)",
+        "selfMs": 55.39999999999998,
+        "count": 381
+      },
+      "mostRerendered": {
+        "name": "ForwardRef(motion.div)",
+        "count": 381
       }
     },
     "notes": [
+      "React: 1023 component renders across 10 components (134ms, React DevTools timing). Most-rendered: ForwardRef(motion.div) ×381 — frequent re-renders are the usual culprit; check memoization / state placement. Timings include React DevTools recording overhead — capture without DevTools for true frame cost.",
       "Dev build detected (React dev runtime) — record a production build for representative numbers.",
       "Browser extensions were active during capture — engine/native time is inflated.",
-      "GC pressure: 1 scavenge (15.5/s) + 1 mark-compact cost 13ms of main-thread pauses. Hottest JS before scavenges (heuristic): isCircleInsidePerimeter — likely high allocation. Reduce per-frame allocations (pool/reuse objects); confirm with a heap allocation profile."
+      "GC pressure: 5 scavenges (5.5/s) + 1 mark-compact cost 26ms of main-thread pauses. Hottest JS before scavenges (heuristic): _getGlobalBoundsRecursive — likely high allocation. Reduce per-frame allocations (pool/reuse objects); confirm with a heap allocation profile."
     ]
   },
   "frames": {
@@ -52,11 +67,11 @@
       "confidence": 1
     },
     "warmupMs": 412.337,
-    "windowMs": 270.22,
-    "presented": 17,
+    "windowMs": 1071.676,
+    "presented": 65,
     "dropped": 0,
     "droppedPct": 0,
-    "presentationFps": 62.91170157649322,
+    "presentationFps": 60.65265994572987,
     "worstFreezeMs": 0,
     "worstFreezeAtMs": 0,
     "jankGapCount": 0,
@@ -66,81 +81,81 @@
       {
         "key": "animate_us",
         "label": "animation / rAF callbacks",
-        "totalMs": 167.107,
-        "sharePct": 96.24260644700543
+        "totalMs": 569.682,
+        "sharePct": 96.14237013534951
       },
       {
         "key": "update_layers_us",
         "label": "update layers",
-        "totalMs": 1.746,
-        "sharePct": 1.0055808006634759
+        "totalMs": 6.647,
+        "sharePct": 1.121780808046714
       },
       {
         "key": "prepaint_us",
         "label": "pre-paint",
-        "totalMs": 1.631,
-        "sharePct": 0.9393483882486422
-      },
-      {
-        "key": "layout_update_us",
-        "label": "layout",
-        "totalMs": 1.157,
-        "sharePct": 0.6663556622953274
+        "totalMs": 6.078,
+        "sharePct": 1.0257535356262868
       },
       {
         "key": "style_update_us",
         "label": "style recalc",
-        "totalMs": 0.891,
-        "sharePct": 0.5131572127097119
+        "totalMs": 3.435,
+        "sharePct": 0.5797076990582914
+      },
+      {
+        "key": "layout_update_us",
+        "label": "layout",
+        "totalMs": 3.062,
+        "sharePct": 0.5167583623046546
       },
       {
         "key": "paint_us",
         "label": "paint",
-        "totalMs": 0.788,
-        "sharePct": 0.45383600854686085
+        "totalMs": 2.592,
+        "sharePct": 0.4374388226955142
       },
       {
         "key": "compositing_inputs_us",
         "label": "compositing inputs",
-        "totalMs": 0.176,
-        "sharePct": 0.10136438769574557
+        "totalMs": 0.549,
+        "sharePct": 0.09265197286259155
       },
       {
         "key": "composite_commit_us",
         "label": "composite commit",
-        "totalMs": 0.125,
-        "sharePct": 0.0719917526248193
+        "totalMs": 0.408,
+        "sharePct": 0.06885611097984946
       },
       {
         "key": "handle_input_events_us",
         "label": "input handlers",
-        "totalMs": 0.01,
-        "sharePct": 0.0057593402099855445
+        "totalMs": 0.087,
+        "sharePct": 0.014682553076585548
       }
     ],
     "pipelineLatencyMs": {
-      "p50": 40.66,
-      "p95": 57.333,
+      "p50": 40.659,
+      "p95": 41.647,
       "max": 57.351
     },
     "droppedClusters": []
   },
   "profile": {
     "tid": 7773354,
-    "sampleCount": 30665,
-    "activeMs": 233.95,
-    "idleMs": 42.7,
-    "gcMs": 19.246,
-    "nativeMs": 139.353,
-    "jsMs": 75.351,
+    "sampleCount": 104713,
+    "activeMs": 747.425,
+    "idleMs": 337.611,
+    "gcMs": 34.091,
+    "nativeMs": 431.565,
+    "jsMs": 281.769,
     "functions": [
       {
         "functionName": "_getGlobalBoundsRecursive",
         "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
         "line": 661,
         "col": 28,
-        "selfMs": 4.545999999999999,
-        "sharePct": 6.033098432668444,
+        "selfMs": 16.613999999999994,
+        "sharePct": 5.896319325404851,
         "app": false
       },
       {
@@ -148,8 +163,8 @@
         "url": "http://localhost:5173/node_modules/.vite/deps/@pixi_layout.js?v=200eec3e",
         "line": 481,
         "col": 15,
-        "selfMs": 3.2449999999999997,
-        "sharePct": 4.306512189619248,
+        "selfMs": 13.752999999999998,
+        "sharePct": 4.880948578445463,
         "app": false
       },
       {
@@ -157,8 +172,8 @@
         "url": "http://localhost:5173/node_modules/.vite/deps/chunk-OKHOTB3R.js?v=200eec3e",
         "line": 735,
         "col": 36,
-        "selfMs": 3.093,
-        "sharePct": 4.104789584743401,
+        "selfMs": 11.476999999999999,
+        "sharePct": 4.073194709141175,
         "app": false
       },
       {
@@ -166,44 +181,26 @@
         "url": "http://localhost:5173/src/BattleScreen/render/terrain/elevationField.ts?t=1781587780948",
         "line": 138,
         "col": 19,
-        "selfMs": 2.546,
-        "sharePct": 3.378853631670449,
+        "selfMs": 10.939,
+        "sharePct": 3.882258161827596,
         "app": true
-      },
-      {
-        "functionName": "(anonymous)",
-        "url": "http://localhost:5173/src/BattleScreen/render/terrain/TerrainSpriteLayer.tsx?t=1781594641216",
-        "line": 190,
-        "col": 21,
-        "selfMs": 1.8410000000000002,
-        "sharePct": 2.4432323393186555,
-        "app": true
-      },
-      {
-        "functionName": "sortLinked",
-        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-KZO5MPJJ.js?v=200eec3e",
-        "line": 258,
-        "col": 20,
-        "selfMs": 1.7970000000000002,
-        "sharePct": 2.3848389536966996,
-        "app": false
       },
       {
         "functionName": "collectRenderables",
         "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
         "line": 419,
         "col": 21,
-        "selfMs": 1.7089999999999999,
-        "sharePct": 2.2680521824527875,
+        "selfMs": 8.297000000000004,
+        "sharePct": 2.944610656246785,
         "app": false
       },
       {
-        "functionName": "positionBlade",
+        "functionName": "(anonymous)",
         "url": "http://localhost:5173/src/BattleScreen/render/terrain/TerrainSpriteLayer.tsx?t=1781594641216",
-        "line": 233,
-        "col": 29,
-        "selfMs": 1.3849999999999998,
-        "sharePct": 1.838064524691112,
+        "line": 190,
+        "col": 21,
+        "selfMs": 7.819,
+        "sharePct": 2.7749681476670602,
         "app": true
       },
       {
@@ -211,80 +208,98 @@
         "url": "http://localhost:5173/node_modules/.vite/deps/chunk-KZO5MPJJ.js?v=200eec3e",
         "line": 115,
         "col": 21,
-        "selfMs": 1.3210000000000002,
-        "sharePct": 1.7531286910591766,
+        "selfMs": 7.27,
+        "sharePct": 2.580127693252274,
         "app": false
       },
       {
-        "functionName": "t1",
-        "url": "http://localhost:5173/src/BattleScreen/render/camera/perspective.ts?t=1781587780939",
-        "line": 275,
-        "col": 10,
-        "selfMs": 1.31,
-        "sharePct": 1.7385303446536875,
+        "functionName": "positionBlade",
+        "url": "http://localhost:5173/src/BattleScreen/render/terrain/TerrainSpriteLayer.tsx?t=1781594641216",
+        "line": 233,
+        "col": 29,
+        "selfMs": 7.034999999999998,
+        "sharePct": 2.496726041544669,
         "app": true
       },
       {
-        "functionName": "measureHostInstance",
-        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
-        "line": 1,
-        "col": 93979,
-        "selfMs": 1.2950000000000002,
-        "sharePct": 1.7186235086462025,
-        "app": false
-      },
-      {
-        "functionName": "isCircleInsidePerimeter",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/boardShape.ts",
-        "line": 302,
-        "col": 40,
-        "selfMs": 1.243,
-        "sharePct": 1.6496131438202548,
-        "app": true
-      },
-      {
-        "functionName": "exports.jsxDEV",
-        "url": "http://localhost:5173/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=200eec3e",
-        "line": 239,
-        "col": 32,
-        "selfMs": 1.218999999999999,
-        "sharePct": 1.6177622062082773,
-        "app": false
-      },
-      {
-        "functionName": "captureCurrentFrame",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/utils/frameChangeTracker.ts",
-        "line": 21,
-        "col": 22,
-        "selfMs": 1.07,
-        "sharePct": 1.420020968533928,
-        "app": true
-      },
-      {
-        "functionName": "simpleHash",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/utils/stateChecksum.ts",
-        "line": 21,
+        "functionName": "sortLinked",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-KZO5MPJJ.js?v=200eec3e",
+        "line": 258,
         "col": 20,
-        "selfMs": 1.03,
-        "sharePct": 1.3669360725139679,
-        "app": true
+        "selfMs": 4.732000000000001,
+        "sharePct": 1.6793898548101462,
+        "app": false
       },
       {
         "functionName": "collectRenderablesSimple",
         "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
         "line": 3112,
         "col": 27,
-        "selfMs": 0.917,
-        "sharePct": 1.2169712412575813,
+        "selfMs": 3.924,
+        "sharePct": 1.3926301331942121,
+        "app": false
+      },
+      {
+        "functionName": "exports.jsxDEV",
+        "url": "http://localhost:5173/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=200eec3e",
+        "line": 239,
+        "col": 32,
+        "selfMs": 3.6849999999999823,
+        "sharePct": 1.3078088789043443,
+        "app": false
+      },
+      {
+        "functionName": "updateRenderGroupTransforms",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-OKHOTB3R.js?v=200eec3e",
+        "line": 688,
+        "col": 37,
+        "selfMs": 3.581,
+        "sharePct": 1.2708992117656661,
+        "app": false
+      },
+      {
+        "functionName": "measureHostInstance",
+        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
+        "line": 1,
+        "col": 93979,
+        "selfMs": 3.3240000000000003,
+        "sharePct": 1.179689745855648,
+        "app": false
+      },
+      {
+        "functionName": "(anonymous)",
+        "url": "http://localhost:5173/src/BattleScreen/render/terrain/TerrainSpriteLayer.tsx?t=1781594641216",
+        "line": 183,
+        "col": 17,
+        "selfMs": 3.2020000000000004,
+        "sharePct": 1.1363918670968063,
+        "app": true
+      },
+      {
+        "functionName": "set",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
+        "line": 93,
+        "col": 6,
+        "selfMs": 3.053,
+        "sharePct": 1.0835116709077295,
+        "app": false
+      },
+      {
+        "functionName": "emit",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
+        "line": 2444,
+        "col": 7,
+        "selfMs": 3.0450000000000004,
+        "sharePct": 1.0806724657432152,
         "app": false
       },
       {
         "functionName": "break",
-        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-KZO5MPJJ.js?v=200eec3e",
-        "line": 1374,
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-OKHOTB3R.js?v=200eec3e",
+        "line": 1075,
         "col": 8,
-        "selfMs": 0.8490000000000001,
-        "sharePct": 1.1267269180236494,
+        "selfMs": 2.9969999999999994,
+        "sharePct": 1.0636372347561298,
         "app": false
       },
       {
@@ -292,71 +307,71 @@
         "url": "http://localhost:5173/node_modules/.vite/deps/@pixi_layout.js?v=200eec3e",
         "line": 446,
         "col": 14,
-        "selfMs": 0.762,
-        "sharePct": 1.0112672691802365,
+        "selfMs": 2.867,
+        "sharePct": 1.0175001508327743,
         "app": false
       },
       {
-        "functionName": "_onUpdate",
-        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
-        "line": 1633,
-        "col": 12,
-        "selfMs": 0.723,
-        "sharePct": 0.9595094955607756,
-        "app": false
-      },
-      {
-        "functionName": "projectPoint",
-        "url": "http://localhost:5173/src/BattleScreen/render/camera/perspective.ts?t=1781587780939",
-        "line": 62,
-        "col": 29,
-        "selfMs": 0.721,
-        "sharePct": 0.9568552507597775,
-        "app": true
-      },
-      {
-        "functionName": "updateEntityMovement",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/Simulation/MovementSystem.ts",
-        "line": 226,
-        "col": 30,
-        "selfMs": 0.709,
-        "sharePct": 0.9409297819537896,
+        "functionName": "isCircleInsidePerimeter",
+        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/boardShape.ts",
+        "line": 302,
+        "col": 40,
+        "selfMs": 2.721,
+        "sharePct": 0.9656846565803904,
         "app": true
       },
       {
         "functionName": "(anonymous)",
-        "url": "http://localhost:5173/src/BattleScreen/render/terrain/TerrainSpriteLayer.tsx?t=1781594641216",
-        "line": 183,
+        "url": "http://localhost:5173/src/BattleScreen/render/creature/EntitySimRenderer.tsx?t=1781594641216",
+        "line": 91,
         "col": 17,
-        "selfMs": 0.677,
-        "sharePct": 0.8984618651378217,
+        "selfMs": 2.5319999999999996,
+        "sharePct": 0.8986084345687423,
         "app": true
+      },
+      {
+        "functionName": "t1",
+        "url": "http://localhost:5173/src/BattleScreen/render/camera/perspective.ts?t=1781587780939",
+        "line": 275,
+        "col": 10,
+        "selfMs": 2.4109999999999996,
+        "sharePct": 0.8556654564554652,
+        "app": true
+      },
+      {
+        "functionName": "simpleHash",
+        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/utils/stateChecksum.ts",
+        "line": 21,
+        "col": 20,
+        "selfMs": 2.267,
+        "sharePct": 0.8045597634942097,
+        "app": true
+      },
+      {
+        "functionName": "break",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-KZO5MPJJ.js?v=200eec3e",
+        "line": 1374,
+        "col": 8,
+        "selfMs": 2.2,
+        "sharePct": 0.7807814202414035,
+        "app": false
       },
       {
         "functionName": "getAttribute",
         "url": "http://localhost:5173/node_modules/.vite/deps/chunk-D7CXWU2I.js?v=200eec3e",
         "line": 6321,
         "col": 15,
-        "selfMs": 0.652,
-        "sharePct": 0.8652838051253467,
+        "selfMs": 2.1450000000000005,
+        "sharePct": 0.7612618847353685,
         "app": false
       },
       {
-        "functionName": "extractSnapshot",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/Simulation/Simulation.ts",
-        "line": 879,
-        "col": 18,
-        "selfMs": 0.64,
-        "sharePct": 0.8493583363193588,
-        "app": true
-      },
-      {
-        "functionName": "break",
-        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-OKHOTB3R.js?v=200eec3e",
-        "line": 1075,
-        "col": 8,
-        "selfMs": 0.635,
-        "sharePct": 0.8427227243168637,
+        "functionName": "prepareFreshStack",
+        "url": "http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=200eec3e",
+        "line": 12095,
+        "col": 33,
+        "selfMs": 2.099999999999988,
+        "sharePct": 0.7452913556849717,
         "app": false
       }
     ]
@@ -370,13 +385,13 @@
   },
   "gc": {
     "mainTid": 7773354,
-    "scavengeCount": 1,
-    "scavengeMs": 4.295,
+    "scavengeCount": 5,
+    "scavengeMs": 17.847,
     "markCompactCount": 1,
     "markCompactMs": 8.537,
-    "totalGcMs": 12.832,
+    "totalGcMs": 26.384,
     "youngFreedBytes": 0,
-    "scavengeHz": 15.549923027881011,
+    "scavengeHz": 5.525594553974008,
     "pauses": [
       {
         "kind": "mark-compact",
@@ -389,94 +404,196 @@
         "startMs": 450.686,
         "durMs": 4.295,
         "freedBytes": 0
+      },
+      {
+        "kind": "scavenge",
+        "startMs": 1355.566,
+        "durMs": 3.532,
+        "freedBytes": 0
+      },
+      {
+        "kind": "scavenge",
+        "startMs": 1145.316,
+        "durMs": 3.43,
+        "freedBytes": 0
+      },
+      {
+        "kind": "scavenge",
+        "startMs": 728.151,
+        "durMs": 3.337,
+        "freedBytes": 0
+      },
+      {
+        "kind": "scavenge",
+        "startMs": 928.828,
+        "durMs": 3.253,
+        "freedBytes": 0
       }
     ],
     "suspectedAllocators": [
       {
-        "functionName": "isCircleInsidePerimeter",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/boardShape.ts",
-        "line": 302,
-        "preGcMs": 1.078,
-        "sharePct": 6.243484304413299,
-        "app": true
-      },
-      {
         "functionName": "_getGlobalBoundsRecursive",
         "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
         "line": 661,
-        "preGcMs": 0.8430000000000001,
-        "sharePct": 4.882427892968842,
+        "preGcMs": 6.780000000000002,
+        "sharePct": 5.5518252239563735,
         "app": false
       },
       {
-        "functionName": "simpleHash",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/utils/stateChecksum.ts",
-        "line": 21,
-        "preGcMs": 0.773,
-        "sharePct": 4.477006834240705,
-        "app": true
-      },
-      {
-        "functionName": "captureCurrentFrame",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/utils/frameChangeTracker.ts",
-        "line": 21,
-        "preGcMs": 0.661,
-        "sharePct": 3.828333140275687,
-        "app": true
-      },
-      {
-        "functionName": "extractSnapshot",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/Simulation/Simulation.ts",
-        "line": 879,
-        "preGcMs": 0.64,
-        "sharePct": 3.7067068226572455,
-        "app": true
-      },
-      {
-        "functionName": "updateEntityMovement",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/Simulation/MovementSystem.ts",
-        "line": 226,
-        "preGcMs": 0.579,
-        "sharePct": 3.3534113286227267,
-        "app": true
-      },
-      {
-        "functionName": "measureHostInstance",
-        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
-        "line": 1,
-        "preGcMs": 0.5780000000000001,
-        "sharePct": 3.347619599212326,
+        "functionName": "updateLayout",
+        "url": "http://localhost:5173/node_modules/.vite/deps/@pixi_layout.js?v=200eec3e",
+        "line": 481,
+        "preGcMs": 5.6770000000000005,
+        "sharePct": 4.648630058466124,
         "app": false
       },
       {
-        "functionName": "hasValidKey",
-        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-D5R4NKOJ.js?v=200eec3e",
+        "functionName": "sampleHeight",
+        "url": "http://localhost:5173/src/BattleScreen/render/terrain/elevationField.ts?t=1781587780948",
         "line": 138,
-        "preGcMs": 0.501,
-        "sharePct": 2.9016564346113753,
+        "preGcMs": 4.828,
+        "sharePct": 3.9534236255547737,
+        "app": true
+      },
+      {
+        "functionName": "updateTransformAndChildren",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-OKHOTB3R.js?v=200eec3e",
+        "line": 735,
+        "preGcMs": 4.377000000000002,
+        "sharePct": 3.584120797235553,
         "app": false
+      },
+      {
+        "functionName": "collectRenderables",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-VTQOOOML.js?v=200eec3e",
+        "line": 419,
+        "preGcMs": 3.75,
+        "sharePct": 3.0706997920112675,
+        "app": false
+      },
+      {
+        "functionName": "(anonymous)",
+        "url": "http://localhost:5173/src/BattleScreen/render/terrain/TerrainSpriteLayer.tsx?t=1781594641216",
+        "line": 190,
+        "preGcMs": 3.141,
+        "sharePct": 2.5720181457886375,
+        "app": true
+      },
+      {
+        "functionName": "isEarHashed",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-KZO5MPJJ.js?v=200eec3e",
+        "line": 115,
+        "preGcMs": 2.6,
+        "sharePct": 2.1290185224611453,
+        "app": false
+      },
+      {
+        "functionName": "positionBlade",
+        "url": "http://localhost:5173/src/BattleScreen/render/terrain/TerrainSpriteLayer.tsx?t=1781594641216",
+        "line": 233,
+        "preGcMs": 2.573,
+        "sharePct": 2.106909483958664,
+        "app": true
       },
       {
         "functionName": "sortLinked",
         "url": "http://localhost:5173/node_modules/.vite/deps/chunk-KZO5MPJJ.js?v=200eec3e",
         "line": 258,
-        "preGcMs": 0.41100000000000003,
-        "sharePct": 2.3804007876752005,
+        "preGcMs": 2.3329999999999997,
+        "sharePct": 1.9103846972699428,
         "app": false
       },
       {
-        "functionName": "(anonymous)",
-        "url": "http://localhost:5173/@fs/Users/samanbemel-benrud/personal_repos/orb-ball/packages/shared/Simulation/Simulation.ts",
-        "line": 484,
-        "preGcMs": 0.4,
-        "sharePct": 2.3166917641607787,
-        "app": true
+        "functionName": "exports.jsxDEV",
+        "url": "http://localhost:5173/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=200eec3e",
+        "line": 239,
+        "preGcMs": 1.7969999999999962,
+        "sharePct": 1.4714793403317963,
+        "app": false
+      }
+    ]
+  },
+  "react": {
+    "source": "react-user-timing",
+    "componentCount": 10,
+    "renderCount": 1023,
+    "totalRenderMs": 133.7009999999999,
+    "components": [
+      {
+        "name": "ForwardRef(motion.div)",
+        "count": 381,
+        "selfMs": 55.39999999999998,
+        "totalMs": 201.29799999999955,
+        "sharePct": 41.43574094434596
+      },
+      {
+        "name": "CreaturePerformanceTable",
+        "count": 96,
+        "selfMs": 32.409,
+        "totalMs": 115.60499999999996,
+        "sharePct": 24.239908452442396
+      },
+      {
+        "name": "StatsColumn",
+        "count": 48,
+        "selfMs": 13.804000000000002,
+        "totalMs": 13.804000000000002,
+        "sharePct": 10.324530108226568
+      },
+      {
+        "name": "Button",
+        "count": 85,
+        "selfMs": 8.999000000000002,
+        "totalMs": 8.999000000000002,
+        "sharePct": 6.730690121988619
+      },
+      {
+        "name": "MeasureLayout",
+        "count": 99,
+        "selfMs": 7.698000000000002,
+        "totalMs": 10.40000000000001,
+        "sharePct": 5.757623353602445
+      },
+      {
+        "name": "TelemetryStatsTable",
+        "count": 95,
+        "selfMs": 6.089000000000001,
+        "totalMs": 19.89300000000001,
+        "sharePct": 4.554191816067197
+      },
+      {
+        "name": "LayoutGroup",
+        "count": 96,
+        "selfMs": 4.301000000000002,
+        "totalMs": 83.19599999999998,
+        "sharePct": 3.2168794549031072
+      },
+      {
+        "name": "MeasureLayoutWithContext",
+        "count": 27,
+        "selfMs": 2.702000000000001,
+        "totalMs": 2.702000000000001,
+        "sharePct": 2.0209272929895823
+      },
+      {
+        "name": "GridEl",
+        "count": 48,
+        "selfMs": 1.8010000000000002,
+        "totalMs": 124.20400000000001,
+        "sharePct": 1.3470355494723305
+      },
+      {
+        "name": "TopLeft",
+        "count": 48,
+        "selfMs": 0.49800000000000066,
+        "totalMs": 124.702,
+        "sharePct": 0.37247290596181093
       }
     ]
   },
   "size": {
-    "total": 10868,
-    "kept": 10590,
+    "total": 28353,
+    "kept": 28075,
     "dropped": 278,
     "droppedByReason": {
       "inspector": 200,
@@ -486,81 +603,85 @@
     "keptByCategory": [
       {
         "cat": "disabled-by-default-devtools.timeline",
-        "count": 3150
-      },
-      {
-        "cat": "devtools.timeline,disabled-by-default-v8.gc",
-        "count": 1840
+        "count": 8729
       },
       {
         "cat": "devtools.timeline",
-        "count": 1830
+        "count": 6598
       },
       {
         "cat": "cc,benchmark,disabled-by-default-devtools.timeline.frame",
-        "count": 1014
+        "count": 3382
       },
       {
         "cat": "blink.user_timing",
-        "count": 728
+        "count": 2565
+      },
+      {
+        "cat": "devtools.timeline,disabled-by-default-v8.gc",
+        "count": 2130
+      },
+      {
+        "cat": "v8",
+        "count": 1662
+      },
+      {
+        "cat": "disabled-by-default-v8.cpu_profiler",
+        "count": 1139
       },
       {
         "cat": "cppgc",
         "count": 696
       },
       {
-        "cat": "v8",
-        "count": 598
-      },
-      {
-        "cat": "disabled-by-default-v8.cpu_profiler",
-        "count": 385
-      },
-      {
         "cat": "disabled-by-default-devtools.timeline.frame",
-        "count": 132
-      },
-      {
-        "cat": "v8.execute",
-        "count": 69
+        "count": 372
       },
       {
         "cat": "blink,devtools.timeline",
-        "count": 64
+        "count": 230
+      },
+      {
+        "cat": "v8.execute",
+        "count": 205
       },
       {
         "cat": "blink,rail",
-        "count": 35
+        "count": 131
+      },
+      {
+        "cat": "benchmark,latencyInfo,rail,input.scrolling",
+        "count": 71
       },
       {
         "cat": "disabled-by-default-devtools.screenshot",
-        "count": 18
+        "count": 66
       },
       {
         "cat": "benchmark,rail",
-        "count": 17
+        "count": 65
       },
       {
         "cat": "blink,benchmark,rail,disabled-by-default-blink.debug.layout",
-        "count": 4
+        "count": 12
       },
       {
         "cat": "cc,disabled-by-default-devtools.timeline",
-        "count": 4
+        "count": 12
+      },
+      {
+        "cat": "devtools.timeline,v8",
+        "count": 6
       },
       {
         "cat": "loading",
         "count": 3
       },
       {
-        "cat": "devtools.timeline,v8",
-        "count": 2
-      },
-      {
         "cat": "navigation",
         "count": 1
       }
     ],
-    "timeSpanMs": 676.985
+    "timeSpanMs": 1481.093
   }
 }

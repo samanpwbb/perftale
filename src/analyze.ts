@@ -6,6 +6,7 @@ import {
   isProfileEvent,
   type ProfileModel,
 } from './profile.ts';
+import { buildReactModel, isReactTimingEvent, type ReactModel } from './react.ts';
 import { Reducer, type ReductionStats } from './reduce.ts';
 import { streamTraceEvents } from './stream.ts';
 import { buildTaskModel, isTaskEvent, type TaskModel } from './tasks.ts';
@@ -20,6 +21,8 @@ export interface Analysis {
   tasks: TaskModel;
   /** GC pressure + heuristic allocation attribution (null without v8.gc data). */
   gc: GcModel | null;
+  /** React component-render attribution from DevTools timing (null without it). */
+  react: ReactModel | null;
   reduction: ReductionStats;
 }
 
@@ -48,6 +51,7 @@ export async function analyzeTrace(
   const frameEvents: TraceEvent[] = [];
   const taskEvents: TraceEvent[] = [];
   const gcEvents: TraceEvent[] = [];
+  const reactTimingEvents: TraceEvent[] = [];
   const profiles = new ProfileCollector();
   // The renderer process id, taken from the frame events, so JS attribution
   // selects the app's profile rather than a browser-extension one.
@@ -77,6 +81,8 @@ export async function analyzeTrace(
       profiles.add(event);
     } else if (isGcEvent(event)) {
       gcEvents.push(event);
+    } else if (isReactTimingEvent(event)) {
+      reactTimingEvents.push(event);
     }
   }
 
@@ -91,13 +97,15 @@ export async function analyzeTrace(
   const profile = buildProfileModel(profiles.list(), { ...warmup, ...pid });
   const tasks = buildTaskModel(taskEvents, { originUs, ...warmup, ...pid });
   const gc = buildGcModel(gcEvents, profiles.list(), { originUs, ...warmup, ...pid });
+  const react = buildReactModel(reactTimingEvents, { ...warmup, ...pid });
 
   return {
-    verdict: buildVerdict(frames, profile, tasks, gc),
+    verdict: buildVerdict(frames, profile, tasks, gc, react),
     frames,
     profile,
     tasks,
     gc,
+    react,
     reduction: reducer.finish(),
   };
 }

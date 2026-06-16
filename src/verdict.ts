@@ -1,6 +1,7 @@
 import type { FrameModel } from './frames.ts';
 import type { GcModel } from './gc.ts';
 import type { ProfileModel } from './profile.ts';
+import { mostRerendered, type ReactModel } from './react.ts';
 import { blockingTask, type TaskModel } from './tasks.ts';
 
 /**
@@ -59,6 +60,19 @@ export interface GcVerdict {
   } | null;
 }
 
+export interface ReactVerdict {
+  /** Total render spans React DevTools measured in the window. */
+  renderCount: number;
+  /** Distinct components rendered. */
+  componentCount: number;
+  /** Wall-clock spent in React renders, ms. */
+  totalRenderMs: number;
+  /** Heaviest component by self render time. */
+  topComponent: { name: string; selfMs: number; count: number } | null;
+  /** Component that rendered the most times — the re-render hotspot. */
+  mostRerendered: { name: string; count: number } | null;
+}
+
 export interface Verdict {
   /** Zero dropped frames after warmup. */
   smooth: boolean;
@@ -75,6 +89,8 @@ export interface Verdict {
   topAppHotspot: Hotspot | null;
   /** GC pressure summary, when the trace has v8.gc instrumentation. */
   gc: GcVerdict | null;
+  /** React component-render digest, when the trace has DevTools timing. */
+  react: ReactVerdict | null;
   /** Caveats that should temper how the numbers are read. */
   notes: string[];
 }
@@ -89,6 +105,7 @@ export function buildVerdict(
   profile: ProfileModel | null,
   tasks: TaskModel,
   gc: GcModel | null = null,
+  react: ReactModel | null = null,
 ): Verdict {
   const domainsMs: Record<Exclude<Bound, 'idle'>, number> = {
     animation: 0,
@@ -125,10 +142,38 @@ export function buildVerdict(
     : null;
 
   const notes: string[] = [];
+
+  let reactVerdict: ReactVerdict | null = null;
+  if (react) {
+    const top = react.components[0] ?? null;
+    const rerender = mostRerendered(react);
+    reactVerdict = {
+      renderCount: react.renderCount,
+      componentCount: react.componentCount,
+      totalRenderMs: react.totalRenderMs,
+      topComponent: top ? { name: top.name, selfMs: top.selfMs, count: top.count } : null,
+      mostRerendered: rerender ? { name: rerender.name, count: rerender.count } : null,
+    };
+    let note =
+      `React: ${react.renderCount} component renders across ${react.componentCount} ` +
+      `components (${react.totalRenderMs.toFixed(0)}ms, React DevTools timing)`;
+    if (rerender && rerender.count > 1) {
+      note +=
+        `. Most-rendered: ${rerender.name} ×${rerender.count}` +
+        `${top && top.name !== rerender.name ? `; heaviest: ${top.name} (${top.selfMs.toFixed(1)}ms self)` : ''}` +
+        ` — frequent re-renders are the usual culprit; check memoization / state placement`;
+    } else if (top) {
+      note += `. Heaviest: ${top.name} (${top.selfMs.toFixed(1)}ms self)`;
+    }
+    note +=
+      '. Timings include React DevTools recording overhead — capture without DevTools for true frame cost.';
+    notes.push(note);
+  }
+
   if (
     fns.some(
       (f) =>
-        /jsx-dev-runtime|react-dom_client/.test(f.url) ||
+        /jsx-dev-runtime|react-dom(_client)?\.development/.test(f.url) ||
         f.functionName === 'exports.jsxDEV',
     )
   ) {
@@ -216,6 +261,7 @@ export function buildVerdict(
     worstFreeze,
     topAppHotspot,
     gc: gcVerdict,
+    react: reactVerdict,
     notes,
   };
 }

@@ -1,0 +1,9 @@
+{
+  // Use the workspace's TypeScript (6.x), not VS Code's older bundled version.
+  // Without this, the editor type-checks with a different compiler than
+  // `pnpm typecheck` (tsc) and reports phantom errors — e.g. on the `.ts`
+  // import extensions and `erasableSyntaxOnly` that this repo's type-stripping
+  // setup relies on.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}

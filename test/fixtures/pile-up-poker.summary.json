@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "trace": "pile-up-poker.trace.json.gz",
   "verdict": {
     "smooth": false,
@@ -30,6 +30,7 @@
       "selfMs": 0.516
     },
     "gc": null,
+    "react": null,
     "notes": [
       "Dev build detected (React dev runtime) — record a production build for representative numbers.",
       "Browser extensions were active during capture — engine/native time is inflated.",
@@ -372,6 +373,7 @@
     "totalLongTaskMs": 65.436
   },
   "gc": null,
+  "react": null,
   "size": {
     "total": 12997,
     "kept": 12727,
