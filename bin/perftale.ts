@@ -20,6 +20,13 @@ function pct(part: number, whole: number): string {
   return `${((part / whole) * 100).toFixed(1)}%`;
 }
 
+/** Trim a source url to a filename (and one parent dir for app paths), no query. */
+function shortenUrl(url: string): string {
+  const noQuery = url.split('?')[0] ?? url;
+  const parts = noQuery.split('/').filter(Boolean);
+  return parts.slice(-2).join('/') || noQuery;
+}
+
 function report(
   file: string,
   analysis: Analysis,
@@ -88,6 +95,30 @@ function report(
       out.push(
         `    ${p.totalMs.toFixed(1).padStart(8)}ms  ${p.sharePct.toFixed(0).padStart(3)}%  ${p.label}`,
       );
+    }
+  }
+
+  const prof = analysis.profile;
+  if (prof && prof.functions.length > 0) {
+    out.push('');
+    out.push('JS (self-time by function)');
+    out.push(
+      `  active CPU ${prof.activeMs.toFixed(0)}ms: ` +
+        `${prof.jsMs.toFixed(0)}ms JS / ${prof.nativeMs.toFixed(0)}ms engine+native / ` +
+        `${prof.gcMs.toFixed(0)}ms GC  (idle ${prof.idleMs.toFixed(0)}ms)`,
+    );
+    out.push('');
+    const shown = debug ? prof.functions : prof.functions.slice(0, 15);
+    for (const fn of shown) {
+      const tag = fn.app ? 'APP' : '   ';
+      const where = `${shortenUrl(fn.url)}:${fn.line}`;
+      out.push(
+        `  ${fn.selfMs.toFixed(1).padStart(7)}ms ${fn.sharePct.toFixed(0).padStart(3)}% ${tag}  ` +
+          `${fn.functionName}  ${where}`,
+      );
+    }
+    if (!debug && prof.functions.length > shown.length) {
+      out.push(`  … and ${prof.functions.length - shown.length} more (--debug)`);
     }
   }
 

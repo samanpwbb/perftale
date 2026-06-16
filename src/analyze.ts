@@ -1,4 +1,10 @@
 import { buildFrameModel, isFrameEvent, type FrameModel } from './frames.ts';
+import {
+  ProfileCollector,
+  buildProfileModel,
+  isProfileEvent,
+  type ProfileModel,
+} from './profile.ts';
 import { Reducer, type ReductionStats } from './reduce.ts';
 import { streamTraceEvents } from './stream.ts';
 import type { TraceEvent } from './trace-events.ts';
@@ -6,6 +12,7 @@ import type { TraceEvent } from './trace-events.ts';
 export interface Analysis {
   reduction: ReductionStats;
   frames: FrameModel;
+  profile: ProfileModel | null;
 }
 
 export interface AnalyzeOptions {
@@ -23,6 +30,10 @@ export async function analyzeTrace(
 ): Promise<Analysis> {
   const reducer = new Reducer();
   const frameEvents: TraceEvent[] = [];
+  const profiles = new ProfileCollector();
+  // The renderer process id, taken from the frame events, so JS attribution
+  // selects the app's profile rather than a browser-extension one.
+  let mainPid: number | undefined;
   // End of the profiling-overhead warmup: the main thread is stalled while the
   // CPU profiler starts up, which drops every frame at the recording's start.
   // That is a capture artifact, not app jank, so we exclude it from analysis.
@@ -34,14 +45,24 @@ export async function analyzeTrace(
     if (event.name === 'CpuProfiler::StartProfiling' && typeof event.dur === 'number') {
       warmupEndUs = Math.max(warmupEndUs, event.ts + event.dur);
     }
-    if (isFrameEvent(event)) frameEvents.push(event);
+    if (isFrameEvent(event)) {
+      frameEvents.push(event);
+      if (mainPid === undefined && typeof event.pid === 'number') mainPid = event.pid;
+    } else if (isProfileEvent(event)) {
+      profiles.add(event);
+    }
   }
 
+  const warmup = warmupEndUs > 0 ? { warmupEndUs } : {};
   return {
     reduction: reducer.finish(),
     frames: buildFrameModel(frameEvents, {
       ...(options.fps ? { fps: options.fps } : {}),
-      ...(warmupEndUs > 0 ? { warmupEndUs } : {}),
+      ...warmup,
+    }),
+    profile: buildProfileModel(profiles.list(), {
+      ...warmup,
+      ...(mainPid !== undefined ? { mainPid } : {}),
     }),
   };
 }
