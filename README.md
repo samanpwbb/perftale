@@ -8,12 +8,9 @@ Requires Node 23.6+ (runs TypeScript natively, no build step) and pnpm.
 
 ```bash
 pnpm install
-./install.sh      # put `perftale` on your PATH + register the Claude skill
 ```
 
-`install.sh` symlinks the `perftale` command into `~/.local/bin` and the repo into
-your Claude skills directory. See [Using as a Claude skill](#using-as-a-claude-skill)
-for flags and details.
+Optionally, there is an `install.sh` script that symlinks the `perftale` command into `~/.local/bin` and the repo into your Claude skills directory. See [Using as a Claude skill](#using-as-a-claude-skill) for flags and details.
 
 ## Usage
 
@@ -81,4 +78,4 @@ The full output shape is declared as a single TypeScript type in
 | `tasks`         | long main-thread tasks (>50ms)                                               |
 | `gc`            | GC pause pressure and suspected allocators (`null` if no v8.gc data)         |
 | `react`         | component-render digest from React DevTools timing (`null` if absent)        |
-| `size`          | noise-reduction stats for the streaming pass                                 |
+| `size`          | noise-reduction stats for the streaming pass (debug only)                    |
