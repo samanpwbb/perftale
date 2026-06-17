@@ -300,6 +300,58 @@ export function renderReport(
     }
   }
 
+  // ── REFLOW — forced synchronous layout (layout thrashing). ────────────────
+  const reflow = analysis.reflow;
+  if (reflow && reflow.forcedLayoutCount + reflow.forcedStyleCount > 0) {
+    blank();
+    heading('REFLOW', 'forced synchronous layout');
+    const total = reflow.forcedLayoutCount + reflow.forcedStyleCount;
+    out.push(
+      `  ${reflow.forcedLayoutCount} forced layout${reflow.forcedLayoutCount === 1 ? '' : 's'} ` +
+        `+ ${reflow.forcedStyleCount} style recalc${reflow.forcedStyleCount === 1 ? '' : 's'} ` +
+        c.dim(`— ${ms1(reflow.forcedMs)} total`),
+    );
+    const perFrame = f.presented > 0 ? total / f.presented : 0;
+    const burst =
+      reflow.worstBurstCount >= 2
+        ? `worst burst ${reflow.worstBurstCount} in one call`
+        : '';
+    const rate = `~${perFrame.toFixed(1)}/frame`;
+    out.push(`  ${c.dim([burst, rate].filter(Boolean).join(' · '))}`);
+    if (reflow.culprits.length > 0) {
+      blank();
+      out.push(
+        `  ${c.dim('run-up culprits — JS hottest just before forced layouts; a heuristic, batch reads before writes')}`,
+      );
+      const shown = debug ? reflow.culprits : reflow.culprits.slice(0, 5);
+      for (const line of ranked(
+        c,
+        shown.map((s) => ({
+          metricMs: s.selfMs,
+          secondary: pct0(s.sharePct),
+          app: s.app,
+          name: s.functionName,
+          location: `${shortenUrl(s.url)}:${s.line}`,
+        })),
+        { metric: 'run-up', secondary: 'share', name: 'function' },
+      )) {
+        out.push(line);
+      }
+      if (reflow.culprits.length > shown.length) {
+        moreLine(reflow.culprits.length - shown.length);
+      }
+    }
+    if (debug && reflow.occurrences.length > 0) {
+      blank();
+      out.push(`  ${c.dim('forced layouts')}`);
+      for (const o of reflow.occurrences) {
+        out.push(
+          `  ${ms1(o.durMs).padStart(7)}  ${c.dim(`at ${secs(o.startMs)} · ${o.kind}`)}`,
+        );
+      }
+    }
+  }
+
   // ── GC PRESSURE — synchronous V8 collection pauses on the main thread. ────
   const gc = analysis.gc;
   if (gc && gc.scavengeCount + gc.markCompactCount > 0) {

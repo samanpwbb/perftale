@@ -2,6 +2,7 @@ import type { FrameModel } from './frames.ts';
 import type { GcModel } from './gc.ts';
 import type { ProfileModel } from './profile.ts';
 import { mostRerendered, type ReactModel } from './react.ts';
+import type { ReflowModel } from './reflow.ts';
 import { blockingTask, type TaskModel } from './tasks.ts';
 
 /**
@@ -60,6 +61,25 @@ export interface GcVerdict {
   } | null;
 }
 
+export interface ReflowVerdict {
+  /** Forced `Layout` passes (geometry reflow) inside script. */
+  forcedLayoutCount: number;
+  /** Forced `UpdateLayoutTree` passes (style recalc) inside script. */
+  forcedStyleCount: number;
+  /** Wall-clock paid for forced synchronous layout, ms. */
+  forcedMs: number;
+  /** Most forced flushes in one call — the read/write-in-a-loop signature. */
+  worstBurstCount: number;
+  /** Heuristic culprit: JS hottest in the run-up to forced layouts, if any. */
+  topCulprit: {
+    functionName: string;
+    url: string;
+    line: number;
+    selfMs: number;
+    app: boolean;
+  } | null;
+}
+
 export interface ReactVerdict {
   /** Total render spans React DevTools measured in the window. */
   renderCount: number;
@@ -87,6 +107,8 @@ export interface Verdict {
   worstFreeze: GapVerdict | null;
   /** The top first-party function to look at, if any. */
   topAppHotspot: Hotspot | null;
+  /** Forced synchronous layout summary, when any layout was forced. */
+  reflow: ReflowVerdict | null;
   /** GC pressure summary, when the trace has v8.gc instrumentation. */
   gc: GcVerdict | null;
   /** React component-render digest, when the trace has DevTools timing. */
@@ -106,6 +128,7 @@ export function buildVerdict(
   tasks: TaskModel,
   gc: GcModel | null = null,
   react: ReactModel | null = null,
+  reflow: ReflowModel | null = null,
 ): Verdict {
   const domainsMs: Record<Exclude<Bound, 'idle'>, number> = {
     animation: 0,
@@ -231,6 +254,76 @@ export function buildVerdict(
     }
   }
 
+  let reflowVerdict: ReflowVerdict | null = null;
+  if (reflow) {
+    const culprit = reflow.culprits[0] ?? null;
+    reflowVerdict = {
+      forcedLayoutCount: reflow.forcedLayoutCount,
+      forcedStyleCount: reflow.forcedStyleCount,
+      forcedMs: reflow.forcedMs,
+      worstBurstCount: reflow.worstBurstCount,
+      topCulprit: culprit
+        ? {
+            functionName: culprit.functionName,
+            url: culprit.url,
+            line: culprit.line,
+            selfMs: culprit.selfMs,
+            app: culprit.app,
+          }
+        : null,
+    };
+    // Flag when forced layout costs a meaningful slice of a frame, or a single
+    // call thrashes in a read/write loop.
+    if (reflow.forcedMs >= 4 || reflow.worstBurstCount >= 4) {
+      const total = reflow.forcedLayoutCount + reflow.forcedStyleCount;
+      const counts =
+        `${total} forced reflow${total === 1 ? '' : 's'} ` +
+        `(${reflow.forcedLayoutCount} layout + ${reflow.forcedStyleCount} style recalc, ` +
+        `${reflow.forcedMs.toFixed(0)}ms)`;
+      // When the run-up is dominated by the DevTools extension reading geometry
+      // (e.g. React DevTools' measureHostInstance), the forced flush is a capture
+      // artifact, not app jank — it won't happen with DevTools detached. Surface
+      // it as a caveat rather than misattributing thrashing to the app.
+      if (culprit && /-extension:\/\//.test(culprit.url)) {
+        notes.push(
+          `Forced synchronous layout detected — ${total} reflow${total === 1 ? '' : 's'}, ` +
+            `${reflow.forcedMs.toFixed(0)}ms — but the run-up is dominated by a browser ` +
+            `DevTools extension (${culprit.functionName}) reading component geometry: a ` +
+            `capture artifact that won't occur in production. Re-capture with DevTools ` +
+            `detached to measure your app's own forced reflow.`,
+        );
+      } else {
+        // Read/write-in-a-loop bursts = classic thrashing; steady per-frame
+        // forced reflow is "forced synchronous layout" without the loop.
+        const lead =
+          reflow.worstBurstCount >= 2 ? 'Layout thrashing' : 'Forced synchronous layout';
+        const parts: string[] = [
+          `${lead}: ${counts} — JS read layout geometry mid-frame, forcing the browser ` +
+            `to flush layout inside script.`,
+        ];
+        if (reflow.worstBurstCount >= 2) {
+          parts.push(
+            `Worst burst: ${reflow.worstBurstCount} forced in one call (read/write in a loop).`,
+          );
+        }
+        if (bound === 'animation') {
+          parts.push(
+            `That time is charged to script, so ~${reflow.forcedMs.toFixed(0)}ms of the ` +
+              `'${bound}' bound is synchronous layout, not animation work.`,
+          );
+        }
+        if (culprit) {
+          parts.push(
+            `Hottest JS in the run-up (heuristic): ${culprit.functionName}` +
+              `${culprit.app ? ' (app code)' : ''} — batch DOM reads before writes ` +
+              `(read all geometry first, then write).`,
+          );
+        }
+        notes.push(parts.join(' '));
+      }
+    }
+  }
+
   const smooth = frames.dropped === 0;
   const hz = frames.refresh.hz;
   let headline: string;
@@ -260,6 +353,7 @@ export function buildVerdict(
     largestGap,
     worstFreeze,
     topAppHotspot,
+    reflow: reflowVerdict,
     gc: gcVerdict,
     react: reactVerdict,
     notes,

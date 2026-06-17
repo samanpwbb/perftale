@@ -18,6 +18,7 @@ import type { GcModel } from './gc.ts';
 import type { ProfileModel } from './profile.ts';
 import type { ReactModel } from './react.ts';
 import type { ReductionStats } from './reduce.ts';
+import type { ReflowModel } from './reflow.ts';
 import type { TaskModel } from './tasks.ts';
 import type { Verdict } from './verdict.ts';
 
@@ -35,6 +36,8 @@ export interface Summary {
   profile: ProfileModel | null;
   /** Long main-thread tasks (>50ms by default). */
   tasks: TaskModel;
+  /** Forced synchronous layout (thrashing) + run-up culprits; null when none is forced. */
+  reflow: ReflowModel | null;
   /** GC pause pressure and suspected allocators; null when the trace has no v8.gc data. */
   gc: GcModel | null;
   /** Component-render digest from React DevTools timing; null when absent. */
@@ -50,6 +53,7 @@ export type {
   Bound,
   GapVerdict,
   Hotspot,
+  ReflowVerdict,
   GcVerdict,
   ReactVerdict,
 } from './verdict.ts';
@@ -67,6 +71,7 @@ export type {
   LongTaskHotFunction,
 } from './tasks.ts';
 export type { GcModel, GcPause } from './gc.ts';
+export type { ReflowModel, ReflowCulprit, ForcedLayout } from './reflow.ts';
 export type { ReactModel, ReactComponent } from './react.ts';
 export type { ReductionStats } from './reduce.ts';
 export type { DropReason } from './filter.ts';

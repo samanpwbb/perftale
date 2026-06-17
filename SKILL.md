@@ -63,6 +63,25 @@ freezes to see which jank each caused. Each task is attributed: a `trigger`
 (`scripting` / `layout` / `paint` / `gc`) from its nested timeline events, and the
 `hottest` JS function sampled during it — the code to open and fix.
 
+**REFLOW** — forced synchronous layout, a.k.a. layout thrashing (`null` unless some
+layout was forced). Reading layout geometry (`offsetWidth`, `getBoundingClientRect`,
+`getComputedStyle`) while the DOM is dirty makes the browser flush layout _inside_ your
+script — time that hides in the `animation`/script bound, so the aggregate breakdown
+can't see it.
+
+- `N forced layouts + M style recalcs — Xms total` — `Layout`/`UpdateLayoutTree` events
+  found nested inside a `FunctionCall` (forced), vs sitting under `RunTask` (scheduled,
+  benign — not counted).
+- `worst burst K in one call` — the read/write-in-a-loop signature; K reads forcing K
+  flushes inside one function. `~R/frame` is the rate.
+- `run-up culprits` — **a heuristic** (like GC allocators): the JS hottest in the run-up
+  to each flush — the likely reader. The forcing geometry read itself is tiny, so this
+  names the surrounding code to open, not a single line.
+- **DevTools artifact:** if the top culprit is a `-extension://` script (e.g. React
+  DevTools' `measureHostInstance`), the forced reflow is DevTools measuring components,
+  not your app — it won't happen in production. The VERDICT note flags this; re-capture
+  with DevTools detached to measure your app's own forced reflow.
+
 **GC PRESSURE** — GC cost and likely cause (`null` if the trace has no V8 GC instrumentation).
 
 - `N scavenges … + M mark-compact … — Zms pauses` — synchronous main-thread GC pauses
@@ -99,7 +118,9 @@ unless recorded with DevTools attached, i.e. local dev). Authoritative, not a he
    Drops/freezes → note when they happen.
 3. **Find the domain** from `main-thread frame time`:
    - `animation / rAF` → **JS-bound** → JS section.
-   - `style recalc` / `layout` → **layout-bound** (forced reflow, big recalc; common with DOM/React).
+   - `style recalc` / `layout` → **layout-bound** (forced reflow, big recalc; common with
+     DOM/React). Check the **REFLOW** section — forced synchronous layout is charged to
+     script, so a "forced reflow" finding can explain an `animation`-looking bound.
    - `paint` / `composite` → **rendering-bound** (too many/large layers, layout-animating
      Motion, big repaints). JS will be small — don't chase it.
 4. **JS-bound:** open the top `APP` functions. Look for per-frame work that shouldn't
@@ -126,7 +147,9 @@ unless recorded with DevTools attached, i.e. local dev). Authoritative, not a he
 **DOM / React / Motion (layout/paint/composite-bound):**
 
 - Eliminate forced reflow (layout reads — `offsetWidth`, `getBoundingClientRect` —
-  interleaved with writes inside a frame).
+  interleaved with writes inside a frame). When the **REFLOW** section names a run-up
+  culprit, open it and batch all DOM reads before any writes (read everything first, then
+  mutate) so layout flushes once per frame instead of inside the loop.
 - Animate `transform`/`opacity`, not layout properties; prefer Motion transforms over
   layout animations when many nodes move.
 - Reduce simultaneously animating nodes / composited layers.

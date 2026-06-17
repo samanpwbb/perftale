@@ -19,6 +19,11 @@ VERDICT
       Hottest JS before scavenges (heuristic): _getGlobalBoundsRecursive — likely high
       allocation. Reduce per-frame allocations (pool/reuse objects); confirm with a heap
       allocation profile.
+    • Forced synchronous layout: 60 forced reflows (12 layout + 48 style recalc, 6ms) — JS
+      read layout geometry mid-frame, forcing the browser to flush layout inside script.
+      That time is charged to script, so ~6ms of the 'animation' bound is synchronous
+      layout, not animation work. Hottest JS in the run-up (heuristic): resetTransform —
+      batch DOM reads before writes (read all geometry first, then write).
 
 SIZE  noise reduction
   28,353 events → 28,075 kept (99.0%), 278 noise dropped (1.0%)
@@ -43,6 +48,85 @@ FRAMES  smoothness
     0.5ms     0%  compositing inputs
     0.4ms     0%  composite commit
     0.1ms     0%  input handlers
+
+REFLOW  forced synchronous layout
+  12 forced layouts + 48 style recalcs — 5.8ms total
+  ~0.9/frame
+
+  run-up culprits — JS hottest just before forced layouts; a heuristic, batch reads before writes
+  run-up  share       function                          location
+   1.6ms    38%       resetTransform                    deps/motion_react.js:7720
+   0.3ms     8%       exports.jsxDEV                    deps/react_jsx-dev-runtime.js:239
+   0.3ms     6%       commitTextUpdate                  deps/react-dom_client.js:15894
+   0.2ms     4%       prepareFreshStack                 deps/react-dom_client.js:12095
+   0.2ms     4%       flushSpawnedWork                  deps/react-dom_client.js:12967
+   0.1ms     3%       exports.jsx                       deps/chunk-ESQI3SWO.js:239
+   0.1ms     3%       processBatch                      deps/motion_react.js:411
+   0.1ms     2%       exports.createElement             deps/chunk-D5R4NKOJ.js:761
+   0.1ms     2%       updateVirtualChildrenRecursively  build/installHook.js:1
+   0.1ms     2%       resetTransform                    deps/motion_react.js:6929
+
+  forced layouts
+    0.1ms  at 0.42s · style
+    0.4ms  at 0.44s · layout
+    0.0ms  at 0.44s · style
+    0.1ms  at 0.46s · style
+    0.1ms  at 0.47s · style
+    0.2ms  at 0.49s · layout
+    0.1ms  at 0.50s · style
+    0.1ms  at 0.51s · style
+    0.0ms  at 0.53s · style
+    0.1ms  at 0.55s · style
+    0.1ms  at 0.56s · style
+    0.2ms  at 0.59s · layout
+    0.0ms  at 0.59s · style
+    0.1ms  at 0.63s · style
+    0.1ms  at 0.64s · style
+    0.2ms  at 0.66s · layout
+    0.0ms  at 0.66s · style
+    0.1ms  at 0.68s · style
+    0.1ms  at 0.71s · style
+    0.1ms  at 0.73s · style
+    0.1ms  at 0.76s · style
+    0.2ms  at 0.78s · layout
+    0.1ms  at 0.78s · style
+    0.1ms  at 0.79s · style
+    0.1ms  at 0.83s · style
+    0.1ms  at 0.84s · style
+    0.2ms  at 0.86s · layout
+    0.1ms  at 0.86s · style
+    0.1ms  at 0.88s · style
+    0.1ms  at 0.91s · style
+    0.1ms  at 0.93s · style
+    0.1ms  at 0.96s · style
+    0.2ms  at 0.98s · layout
+    0.1ms  at 0.98s · style
+    0.1ms  at 0.99s · style
+    0.1ms  at 1.03s · style
+    0.1ms  at 1.06s · style
+    0.1ms  at 1.08s · style
+    0.2ms  at 1.09s · layout
+    0.1ms  at 1.09s · style
+    0.1ms  at 1.11s · style
+    0.1ms  at 1.14s · style
+    0.2ms  at 1.17s · layout
+    0.1ms  at 1.18s · style
+    0.1ms  at 1.19s · style
+    0.1ms  at 1.23s · style
+    0.1ms  at 1.26s · style
+    0.2ms  at 1.28s · layout
+    0.0ms  at 1.28s · style
+    0.1ms  at 1.31s · style
+    0.1ms  at 1.33s · style
+    0.1ms  at 1.34s · style
+    0.2ms  at 1.37s · layout
+    0.1ms  at 1.37s · style
+    0.1ms  at 1.39s · style
+    0.1ms  at 1.42s · style
+    0.1ms  at 1.44s · style
+    0.2ms  at 1.47s · layout
+    0.0ms  at 1.48s · style
+    0.1ms  at 1.49s · style
 
 GC PRESSURE  V8 garbage-collection pauses
   5 scavenges (5.5/s, 18ms) + 1 mark-compact (9ms) — 26ms of main-thread pauses
@@ -133,6 +217,11 @@ VERDICT
       Hottest JS before scavenges (heuristic): _getGlobalBoundsRecursive — likely high
       allocation. Reduce per-frame allocations (pool/reuse objects); confirm with a heap
       allocation profile.
+    • Forced synchronous layout: 60 forced reflows (12 layout + 48 style recalc, 6ms) — JS
+      read layout geometry mid-frame, forcing the browser to flush layout inside script.
+      That time is charged to script, so ~6ms of the 'animation' bound is synchronous
+      layout, not animation work. Hottest JS in the run-up (heuristic): resetTransform —
+      batch DOM reads before writes (read all geometry first, then write).
 
 FRAMES  smoothness
   refresh      60Hz · 16.67ms budget · detected, 100% confidence
@@ -153,6 +242,19 @@ FRAMES  smoothness
     0.5ms     0%  compositing inputs
     0.4ms     0%  composite commit
     0.1ms     0%  input handlers
+
+REFLOW  forced synchronous layout
+  12 forced layouts + 48 style recalcs — 5.8ms total
+  ~0.9/frame
+
+  run-up culprits — JS hottest just before forced layouts; a heuristic, batch reads before writes
+  run-up  share       function           location
+   1.6ms    38%       resetTransform     deps/motion_react.js:7720
+   0.3ms     8%       exports.jsxDEV     deps/react_jsx-dev-runtime.js:239
+   0.3ms     6%       commitTextUpdate   deps/react-dom_client.js:15894
+   0.2ms     4%       prepareFreshStack  deps/react-dom_client.js:12095
+   0.2ms     4%       flushSpawnedWork   deps/react-dom_client.js:12967
+  … and 5 more (--debug)
 
 GC PRESSURE  V8 garbage-collection pauses
   5 scavenges (5.5/s, 18ms) + 1 mark-compact (9ms) — 26ms of main-thread pauses
@@ -214,6 +316,10 @@ VERDICT
     • Browser extensions were active during capture — engine/native time is inflated.
     • Large engine/native bucket (115ms) — much of it is console-instrumentation overhead
       from recording with DevTools attached; real app JS is 20ms.
+    • Forced synchronous layout detected — 8 reflows, 2ms — but the run-up is dominated by
+      a browser DevTools extension (measureHostInstance) reading component geometry: a
+      capture artifact that won't occur in production. Re-capture with DevTools detached
+      to measure your app's own forced reflow.
 
 SIZE  noise reduction
   12,997 events → 12,727 kept (97.9%), 270 noise dropped (2.1%)
@@ -244,6 +350,33 @@ LONG TASKS  main-thread tasks over 50ms
   1 task, 65ms total
   65.4ms  at 1.20s  input event · scripting 65ms
                     hottest: memoized  deps/chunk-4T7UYGQA.js:534 · 2.4ms self
+
+REFLOW  forced synchronous layout
+  3 forced layouts + 5 style recalcs — 1.9ms total
+  worst burst 4 in one call · ~0.1/frame
+
+  run-up culprits — JS hottest just before forced layouts; a heuristic, batch reads before writes
+  run-up  share       function                  location
+   1.7ms    15%       measureHostInstance       build/installHook.js:1
+   1.6ms    14%       memoized                  deps/chunk-4T7UYGQA.js:534
+   0.8ms     7%       React.useCallback         deps/react-redux.js:1020
+   0.6ms     5%       exports.jsxDEV            deps/react_jsx-dev-runtime.js:240
+   0.5ms     5%       memoizedSelector          deps/react-redux.js:27
+   0.4ms     3%       react-stack-bottom-frame  deps/react-dom_client.js:17471
+   0.3ms     3%       getTypeSymbol             build/installHook.js:1
+   0.3ms     2%       performAction             lmhkpmbekcpmknklioeibfkpmmfibljd/page.bundle.js:1
+   0.2ms     2%       beginWork                 deps/react-dom_client.js:7545
+   0.2ms     2%       updateFiberRecursively    build/installHook.js:1
+
+  forced layouts
+    0.2ms  at 1.21s · style
+    0.1ms  at 1.23s · style
+    0.1ms  at 1.23s · layout
+    0.5ms  at 1.25s · style
+    0.6ms  at 1.25s · layout
+    0.2ms  at 1.27s · style
+    0.2ms  at 1.27s · layout
+    0.1ms  at 1.27s · style
 
 JS  self-time by function
   active CPU 136ms: 20ms JS / 115ms engine+native / 0ms GC (idle 1062ms)
@@ -293,6 +426,10 @@ VERDICT
     • Browser extensions were active during capture — engine/native time is inflated.
     • Large engine/native bucket (115ms) — much of it is console-instrumentation overhead
       from recording with DevTools attached; real app JS is 20ms.
+    • Forced synchronous layout detected — 8 reflows, 2ms — but the run-up is dominated by
+      a browser DevTools extension (measureHostInstance) reading component geometry: a
+      capture artifact that won't occur in production. Re-capture with DevTools detached
+      to measure your app's own forced reflow.
 
 FRAMES  smoothness
   refresh       60Hz · 16.67ms budget · detected, 100% confidence
@@ -319,6 +456,19 @@ LONG TASKS  main-thread tasks over 50ms
   1 task, 65ms total
   65.4ms  at 1.20s  input event · scripting 65ms
                     hottest: memoized  deps/chunk-4T7UYGQA.js:534 · 2.4ms self
+
+REFLOW  forced synchronous layout
+  3 forced layouts + 5 style recalcs — 1.9ms total
+  worst burst 4 in one call · ~0.1/frame
+
+  run-up culprits — JS hottest just before forced layouts; a heuristic, batch reads before writes
+  run-up  share       function             location
+   1.7ms    15%       measureHostInstance  build/installHook.js:1
+   1.6ms    14%       memoized             deps/chunk-4T7UYGQA.js:534
+   0.8ms     7%       React.useCallback    deps/react-redux.js:1020
+   0.6ms     5%       exports.jsxDEV       deps/react_jsx-dev-runtime.js:240
+   0.5ms     5%       memoizedSelector     deps/react-redux.js:27
+  … and 5 more (--debug)
 
 JS  self-time by function
   active CPU 136ms: 20ms JS / 115ms engine+native / 0ms GC (idle 1062ms)

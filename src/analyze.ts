@@ -8,6 +8,7 @@ import {
 } from './profile.ts';
 import { buildReactModel, isReactTimingEvent, type ReactModel } from './react.ts';
 import { Reducer, type ReductionStats } from './reduce.ts';
+import { buildReflowModel, isReflowStackEvent, type ReflowModel } from './reflow.ts';
 import { streamTraceEvents } from './stream.ts';
 import {
   buildTaskModel,
@@ -24,6 +25,8 @@ export interface Analysis {
   frames: FrameModel;
   profile: ProfileModel | null;
   tasks: TaskModel;
+  /** Forced synchronous layout (thrashing); null when no layout is forced. */
+  reflow: ReflowModel | null;
   /** GC pressure + heuristic allocation attribution (null without v8.gc data). */
   gc: GcModel | null;
   /** React component-render attribution from DevTools timing (null without it). */
@@ -58,6 +61,7 @@ export async function analyzeTrace(
   const taskChildEvents: TraceEvent[] = [];
   const gcEvents: TraceEvent[] = [];
   const reactTimingEvents: TraceEvent[] = [];
+  const reflowEvents: TraceEvent[] = [];
   const profiles = new ProfileCollector();
   // The renderer process id, taken from the frame events, so JS attribution
   // selects the app's profile rather than a browser-extension one.
@@ -89,6 +93,8 @@ export async function analyzeTrace(
       gcEvents.push(event);
     } else if (isReactTimingEvent(event)) {
       reactTimingEvents.push(event);
+    } else if (isReflowStackEvent(event)) {
+      reflowEvents.push(event);
     }
     // Captured alongside the branches above (not else-if): a long task is
     // attributed from its nested timeline children, and GC events are both their
@@ -115,14 +121,23 @@ export async function analyzeTrace(
     childEvents: taskChildEvents,
     profiles: profiles.list(),
   });
+  // After tasks: reflow detection keys off the renderer main thread (the task
+  // model's busiest RunTask thread) to filter the layout/script stack.
+  const reflow = buildReflowModel(reflowEvents, profiles.list(), {
+    originUs,
+    ...warmup,
+    ...pid,
+    ...(tasks.mainTid !== undefined ? { mainTid: tasks.mainTid } : {}),
+  });
   const gc = buildGcModel(gcEvents, profiles.list(), { originUs, ...warmup, ...pid });
   const react = buildReactModel(reactTimingEvents, { ...warmup, ...pid });
 
   return {
-    verdict: buildVerdict(frames, profile, tasks, gc, react),
+    verdict: buildVerdict(frames, profile, tasks, gc, react, reflow),
     frames,
     profile,
     tasks,
+    reflow,
     gc,
     react,
     reduction: reducer.finish(),

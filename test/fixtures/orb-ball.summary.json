@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "trace": "orb-ball.trace.json.gz",
   "verdict": {
     "smooth": true,
@@ -23,6 +23,19 @@
       "url": "http://localhost:5173/src/BattleScreen/render/terrain/elevationField.ts?t=1781587780948",
       "line": 138,
       "selfMs": 10.939
+    },
+    "reflow": {
+      "forcedLayoutCount": 12,
+      "forcedStyleCount": 48,
+      "forcedMs": 5.784,
+      "worstBurstCount": 1,
+      "topCulprit": {
+        "functionName": "resetTransform",
+        "url": "http://localhost:5173/node_modules/.vite/deps/motion_react.js?v=200eec3e",
+        "line": 7720,
+        "selfMs": 1.608,
+        "app": false
+      }
     },
     "gc": {
       "totalMs": 26.384,
@@ -56,7 +69,8 @@
       "React: 1023 component renders across 10 components (134ms, React DevTools timing). Most-rendered: ForwardRef(motion.div) ×381 — frequent re-renders are the usual culprit; check memoization / state placement. Timings include React DevTools recording overhead — capture without DevTools for true frame cost.",
       "Dev build detected (React dev runtime) — record a production build for representative numbers.",
       "Browser extensions were active during capture — engine/native time is inflated.",
-      "GC pressure: 5 scavenges (5.5/s) + 1 mark-compact cost 26ms of main-thread pauses. Hottest JS before scavenges (heuristic): _getGlobalBoundsRecursive — likely high allocation. Reduce per-frame allocations (pool/reuse objects); confirm with a heap allocation profile."
+      "GC pressure: 5 scavenges (5.5/s) + 1 mark-compact cost 26ms of main-thread pauses. Hottest JS before scavenges (heuristic): _getGlobalBoundsRecursive — likely high allocation. Reduce per-frame allocations (pool/reuse objects); confirm with a heap allocation profile.",
+      "Forced synchronous layout: 60 forced reflows (12 layout + 48 style recalc, 6ms) — JS read layout geometry mid-frame, forcing the browser to flush layout inside script. That time is charged to script, so ~6ms of the 'animation' bound is synchronous layout, not animation work. Hottest JS in the run-up (heuristic): resetTransform — batch DOM reads before writes (read all geometry first, then write)."
     ]
   },
   "frames": {
@@ -382,6 +396,398 @@
     "longTasks": [],
     "longTaskCount": 0,
     "totalLongTaskMs": 0
+  },
+  "reflow": {
+    "mainTid": 7773354,
+    "forcedLayoutCount": 12,
+    "forcedStyleCount": 48,
+    "forcedMs": 5.784,
+    "worstMs": 0.407,
+    "worstBurstCount": 1,
+    "occurrences": [
+      {
+        "kind": "style",
+        "startMs": 419.388,
+        "durMs": 0.054
+      },
+      {
+        "kind": "layout",
+        "startMs": 437.429,
+        "durMs": 0.407
+      },
+      {
+        "kind": "style",
+        "startMs": 438.611,
+        "durMs": 0.049
+      },
+      {
+        "kind": "style",
+        "startMs": 457.595,
+        "durMs": 0.081
+      },
+      {
+        "kind": "style",
+        "startMs": 470.149,
+        "durMs": 0.057
+      },
+      {
+        "kind": "layout",
+        "startMs": 494.337,
+        "durMs": 0.238
+      },
+      {
+        "kind": "style",
+        "startMs": 495.296,
+        "durMs": 0.06
+      },
+      {
+        "kind": "style",
+        "startMs": 512.3,
+        "durMs": 0.061
+      },
+      {
+        "kind": "style",
+        "startMs": 534.192,
+        "durMs": 0.044
+      },
+      {
+        "kind": "style",
+        "startMs": 546.448,
+        "durMs": 0.057
+      },
+      {
+        "kind": "style",
+        "startMs": 560.964,
+        "durMs": 0.055
+      },
+      {
+        "kind": "layout",
+        "startMs": 592.13,
+        "durMs": 0.224
+      },
+      {
+        "kind": "style",
+        "startMs": 592.951,
+        "durMs": 0.046
+      },
+      {
+        "kind": "style",
+        "startMs": 625.374,
+        "durMs": 0.056
+      },
+      {
+        "kind": "style",
+        "startMs": 643.499,
+        "durMs": 0.063
+      },
+      {
+        "kind": "layout",
+        "startMs": 659.044,
+        "durMs": 0.233
+      },
+      {
+        "kind": "style",
+        "startMs": 659.902,
+        "durMs": 0.048
+      },
+      {
+        "kind": "style",
+        "startMs": 675.777,
+        "durMs": 0.058
+      },
+      {
+        "kind": "style",
+        "startMs": 709.337,
+        "durMs": 0.061
+      },
+      {
+        "kind": "style",
+        "startMs": 725.768,
+        "durMs": 0.055
+      },
+      {
+        "kind": "style",
+        "startMs": 759.804,
+        "durMs": 0.053
+      },
+      {
+        "kind": "layout",
+        "startMs": 776.44,
+        "durMs": 0.22
+      },
+      {
+        "kind": "style",
+        "startMs": 777.209,
+        "durMs": 0.053
+      },
+      {
+        "kind": "style",
+        "startMs": 792.37,
+        "durMs": 0.06
+      },
+      {
+        "kind": "style",
+        "startMs": 825.827,
+        "durMs": 0.051
+      },
+      {
+        "kind": "style",
+        "startMs": 843.551,
+        "durMs": 0.065
+      },
+      {
+        "kind": "layout",
+        "startMs": 859.936,
+        "durMs": 0.225
+      },
+      {
+        "kind": "style",
+        "startMs": 860.877,
+        "durMs": 0.067
+      },
+      {
+        "kind": "style",
+        "startMs": 876.229,
+        "durMs": 0.07
+      },
+      {
+        "kind": "style",
+        "startMs": 908.873,
+        "durMs": 0.065
+      },
+      {
+        "kind": "style",
+        "startMs": 926.537,
+        "durMs": 0.06
+      },
+      {
+        "kind": "style",
+        "startMs": 957.664,
+        "durMs": 0.067
+      },
+      {
+        "kind": "layout",
+        "startMs": 976.251,
+        "durMs": 0.235
+      },
+      {
+        "kind": "style",
+        "startMs": 977.14,
+        "durMs": 0.057
+      },
+      {
+        "kind": "style",
+        "startMs": 993.071,
+        "durMs": 0.057
+      },
+      {
+        "kind": "style",
+        "startMs": 1025.585,
+        "durMs": 0.058
+      },
+      {
+        "kind": "style",
+        "startMs": 1058.052,
+        "durMs": 0.056
+      },
+      {
+        "kind": "style",
+        "startMs": 1075.521,
+        "durMs": 0.072
+      },
+      {
+        "kind": "layout",
+        "startMs": 1092.523,
+        "durMs": 0.233
+      },
+      {
+        "kind": "style",
+        "startMs": 1093.426,
+        "durMs": 0.064
+      },
+      {
+        "kind": "style",
+        "startMs": 1109.565,
+        "durMs": 0.06
+      },
+      {
+        "kind": "style",
+        "startMs": 1143.113,
+        "durMs": 0.062
+      },
+      {
+        "kind": "layout",
+        "startMs": 1174.984,
+        "durMs": 0.231
+      },
+      {
+        "kind": "style",
+        "startMs": 1175.872,
+        "durMs": 0.103
+      },
+      {
+        "kind": "style",
+        "startMs": 1193.183,
+        "durMs": 0.062
+      },
+      {
+        "kind": "style",
+        "startMs": 1225.211,
+        "durMs": 0.069
+      },
+      {
+        "kind": "style",
+        "startMs": 1259.059,
+        "durMs": 0.058
+      },
+      {
+        "kind": "layout",
+        "startMs": 1276.198,
+        "durMs": 0.236
+      },
+      {
+        "kind": "style",
+        "startMs": 1277.007,
+        "durMs": 0.049
+      },
+      {
+        "kind": "style",
+        "startMs": 1307.461,
+        "durMs": 0.052
+      },
+      {
+        "kind": "style",
+        "startMs": 1326.614,
+        "durMs": 0.059
+      },
+      {
+        "kind": "style",
+        "startMs": 1343.736,
+        "durMs": 0.052
+      },
+      {
+        "kind": "layout",
+        "startMs": 1374.042,
+        "durMs": 0.214
+      },
+      {
+        "kind": "style",
+        "startMs": 1374.845,
+        "durMs": 0.05
+      },
+      {
+        "kind": "style",
+        "startMs": 1391.645,
+        "durMs": 0.056
+      },
+      {
+        "kind": "style",
+        "startMs": 1424.589,
+        "durMs": 0.063
+      },
+      {
+        "kind": "style",
+        "startMs": 1443.547,
+        "durMs": 0.063
+      },
+      {
+        "kind": "layout",
+        "startMs": 1474.63,
+        "durMs": 0.243
+      },
+      {
+        "kind": "style",
+        "startMs": 1475.486,
+        "durMs": 0.049
+      },
+      {
+        "kind": "style",
+        "startMs": 1493.362,
+        "durMs": 0.058
+      }
+    ],
+    "culprits": [
+      {
+        "functionName": "resetTransform",
+        "url": "http://localhost:5173/node_modules/.vite/deps/motion_react.js?v=200eec3e",
+        "line": 7720,
+        "selfMs": 1.608,
+        "sharePct": 38.02317332702766,
+        "app": false
+      },
+      {
+        "functionName": "exports.jsxDEV",
+        "url": "http://localhost:5173/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=200eec3e",
+        "line": 239,
+        "selfMs": 0.3280000000000002,
+        "sharePct": 7.755970678647439,
+        "app": false
+      },
+      {
+        "functionName": "commitTextUpdate",
+        "url": "http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=200eec3e",
+        "line": 15894,
+        "selfMs": 0.267,
+        "sharePct": 6.313549302435565,
+        "app": false
+      },
+      {
+        "functionName": "prepareFreshStack",
+        "url": "http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=200eec3e",
+        "line": 12095,
+        "selfMs": 0.1680000000000001,
+        "sharePct": 3.9725703475999072,
+        "app": false
+      },
+      {
+        "functionName": "flushSpawnedWork",
+        "url": "http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=200eec3e",
+        "line": 12967,
+        "selfMs": 0.167,
+        "sharePct": 3.948924095530858,
+        "app": false
+      },
+      {
+        "functionName": "exports.jsx",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-ESQI3SWO.js?v=200eec3e",
+        "line": 239,
+        "selfMs": 0.11400000000000005,
+        "sharePct": 2.6956727358713657,
+        "app": false
+      },
+      {
+        "functionName": "processBatch",
+        "url": "http://localhost:5173/node_modules/.vite/deps/motion_react.js?v=200eec3e",
+        "line": 411,
+        "selfMs": 0.10600000000000001,
+        "sharePct": 2.506502719318988,
+        "app": false
+      },
+      {
+        "functionName": "exports.createElement",
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-D5R4NKOJ.js?v=200eec3e",
+        "line": 761,
+        "selfMs": 0.10500000000000001,
+        "sharePct": 2.482856467249941,
+        "app": false
+      },
+      {
+        "functionName": "updateVirtualChildrenRecursively",
+        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
+        "line": 1,
+        "selfMs": 0.102,
+        "sharePct": 2.4119177110427996,
+        "app": false
+      },
+      {
+        "functionName": "resetTransform",
+        "url": "http://localhost:5173/node_modules/.vite/deps/motion_react.js?v=200eec3e",
+        "line": 6929,
+        "selfMs": 0.096,
+        "sharePct": 2.2700401986285175,
+        "app": false
+      }
+    ]
   },
   "gc": {
     "mainTid": 7773354,

@@ -367,6 +367,91 @@ export function buildProfileModel(
   };
 }
 
+/**
+ * JS self-time charged to a set of time windows, attributed to one leaf
+ * function. The shape `correlateAllocators` (GC) and `buildReflowModel` (forced
+ * layout) both surface — what JS was running across some windows of interest.
+ */
+export interface WindowedSuspect {
+  functionName: string;
+  url: string;
+  line: number;
+  /** JS self-time charged inside the windows (ms). */
+  selfMs: number;
+  /** Share of attributed window JS self-time. */
+  sharePct: number;
+  app: boolean;
+}
+
+/**
+ * Charge CPU-profile JS self-time to a set of time windows and rank the leaf
+ * functions that ran in them. Given disjoint, time-ordered `[startUs, endUs)`
+ * windows, sweep the sample timeline once (same charging rule as
+ * `buildProfileModel`) and aggregate self-time per function across all windows.
+ *
+ * This is the generic engine behind both the GC allocator heuristic
+ * (`correlateAllocators`) and forced-layout culprit attribution
+ * (`buildReflowModel`): "which function was consistently hot during these
+ * windows." Windows must be disjoint — the sweep advances a single pointer and
+ * assumes no overlap.
+ */
+export function attributeWindowedSelfTime(
+  profiles: RawProfile[],
+  windows: Array<{ startUs: number; endUs: number }>,
+  options: { warmupEndUs?: number; mainPid?: number; top?: number } = {},
+): WindowedSuspect[] {
+  const main = pickMainProfile(profiles, options.mainPid);
+  if (!main) return [];
+  const warmupEndUs = options.warmupEndUs ?? 0;
+  const wins = windows
+    .filter((w) => w.endUs > w.startUs && w.endUs > warmupEndUs)
+    .sort((a, b) => a.startUs - b.startUs);
+  if (wins.length === 0) return [];
+
+  const { tsArr, order } = buildTimeline(main);
+  const memo = new Map<number, Target>();
+  const selfUs = new Map<string, WindowedSuspect>();
+  let totalUs = 0;
+  let wi = 0;
+
+  for (let k = 0; k < order.length; k++) {
+    const i = order[k] ?? 0;
+    const tStart = tsArr[i] ?? 0;
+    const tNext = k + 1 < order.length ? (tsArr[order[k + 1] ?? 0] ?? tStart) : tStart;
+    const dt = Math.max(0, tNext - tStart);
+    if (dt === 0) continue;
+    // Advance past windows that already ended at or before this sample.
+    while (wi < wins.length && (wins[wi]?.endUs ?? 0) <= tStart) wi++;
+    if (wi >= wins.length) break;
+    // Sample sits in a gap before the next window — skip without advancing.
+    if (tStart < (wins[wi]?.startUs ?? 0)) continue;
+
+    const target = resolveTarget(main, main.samples[i] ?? -1, memo);
+    if (target.kind !== 'js') continue;
+    totalUs += dt;
+    const existing = selfUs.get(target.key);
+    if (existing) {
+      existing.selfMs += dt / 1000;
+    } else {
+      selfUs.set(target.key, {
+        functionName: target.fn,
+        url: target.url,
+        line: target.line,
+        selfMs: dt / 1000,
+        sharePct: 0,
+        app: target.app,
+      });
+    }
+  }
+
+  const totalMs = totalUs / 1000;
+  const keyOf = (f: WindowedSuspect) => `${f.functionName}@${f.url}:${f.line}`;
+  return [...selfUs.values()]
+    .map((f) => ({ ...f, sharePct: totalMs > 0 ? (f.selfMs / totalMs) * 100 : 0 }))
+    .sort((a, b) => b.selfMs - a.selfMs || (keyOf(a) < keyOf(b) ? -1 : 1))
+    .slice(0, options.top ?? 10);
+}
+
 export interface AllocatorSuspect {
   functionName: string;
   url: string;
@@ -388,62 +473,23 @@ export interface AllocatorSuspect {
  * This is a correlation, not proof: a scavenge fires on whichever allocation
  * crosses the new-space limit, not necessarily the biggest allocator. Treat the
  * result as a lead and confirm with a sampling heap profiler when it matters.
+ *
+ * A thin wrapper over `attributeWindowedSelfTime` (the shared engine), renaming
+ * `selfMs → preGcMs` for this caller's vocabulary; numbers are identical.
  */
 export function correlateAllocators(
   profiles: RawProfile[],
   windows: Array<{ startUs: number; endUs: number }>,
   options: { warmupEndUs?: number; mainPid?: number; top?: number } = {},
 ): AllocatorSuspect[] {
-  const main = pickMainProfile(profiles, options.mainPid);
-  if (!main) return [];
-  const warmupEndUs = options.warmupEndUs ?? 0;
-  const wins = windows
-    .filter((w) => w.endUs > w.startUs && w.endUs > warmupEndUs)
-    .sort((a, b) => a.startUs - b.startUs);
-  if (wins.length === 0) return [];
-
-  const { tsArr, order } = buildTimeline(main);
-  const memo = new Map<number, Target>();
-  const selfUs = new Map<string, AllocatorSuspect>();
-  let totalUs = 0;
-  let wi = 0;
-
-  for (let k = 0; k < order.length; k++) {
-    const i = order[k] ?? 0;
-    const tStart = tsArr[i] ?? 0;
-    const tNext = k + 1 < order.length ? (tsArr[order[k + 1] ?? 0] ?? tStart) : tStart;
-    const dt = Math.max(0, tNext - tStart);
-    if (dt === 0) continue;
-    // Advance past windows that already ended at or before this sample.
-    while (wi < wins.length && (wins[wi]?.endUs ?? 0) <= tStart) wi++;
-    if (wi >= wins.length) break;
-    // Sample sits in a gap before the next window — skip without advancing.
-    if (tStart < (wins[wi]?.startUs ?? 0)) continue;
-
-    const target = resolveTarget(main, main.samples[i] ?? -1, memo);
-    if (target.kind !== 'js') continue;
-    totalUs += dt;
-    const existing = selfUs.get(target.key);
-    if (existing) {
-      existing.preGcMs += dt / 1000;
-    } else {
-      selfUs.set(target.key, {
-        functionName: target.fn,
-        url: target.url,
-        line: target.line,
-        preGcMs: dt / 1000,
-        sharePct: 0,
-        app: target.app,
-      });
-    }
-  }
-
-  const totalMs = totalUs / 1000;
-  const keyOf = (f: AllocatorSuspect) => `${f.functionName}@${f.url}:${f.line}`;
-  return [...selfUs.values()]
-    .map((f) => ({ ...f, sharePct: totalMs > 0 ? (f.preGcMs / totalMs) * 100 : 0 }))
-    .sort((a, b) => b.preGcMs - a.preGcMs || (keyOf(a) < keyOf(b) ? -1 : 1))
-    .slice(0, options.top ?? 10);
+  return attributeWindowedSelfTime(profiles, windows, options).map((s) => ({
+    functionName: s.functionName,
+    url: s.url,
+    line: s.line,
+    preGcMs: s.selfMs,
+    sharePct: s.sharePct,
+    app: s.app,
+  }));
 }
 
 /** CPU-profile self-time charged to one task-sized time window. */

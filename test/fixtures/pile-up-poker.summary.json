@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "trace": "pile-up-poker.trace.json.gz",
   "verdict": {
     "smooth": false,
@@ -29,12 +29,26 @@
       "line": 7,
       "selfMs": 0.516
     },
+    "reflow": {
+      "forcedLayoutCount": 3,
+      "forcedStyleCount": 5,
+      "forcedMs": 1.929,
+      "worstBurstCount": 4,
+      "topCulprit": {
+        "functionName": "measureHostInstance",
+        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
+        "line": 1,
+        "selfMs": 1.6500000000000001,
+        "app": false
+      }
+    },
     "gc": null,
     "react": null,
     "notes": [
       "Dev build detected (React dev runtime) — record a production build for representative numbers.",
       "Browser extensions were active during capture — engine/native time is inflated.",
-      "Large engine/native bucket (115ms) — much of it is console-instrumentation overhead from recording with DevTools attached; real app JS is 20ms."
+      "Large engine/native bucket (115ms) — much of it is console-instrumentation overhead from recording with DevTools attached; real app JS is 20ms.",
+      "Forced synchronous layout detected — 8 reflows, 2ms — but the run-up is dominated by a browser DevTools extension (measureHostInstance) reading component geometry: a capture artifact that won't occur in production. Re-capture with DevTools detached to measure your app's own forced reflow."
     ]
   },
   "frames": {
@@ -386,6 +400,138 @@
     ],
     "longTaskCount": 1,
     "totalLongTaskMs": 65.436
+  },
+  "reflow": {
+    "mainTid": 7792766,
+    "forcedLayoutCount": 3,
+    "forcedStyleCount": 5,
+    "forcedMs": 1.929,
+    "worstMs": 0.589,
+    "worstBurstCount": 4,
+    "occurrences": [
+      {
+        "kind": "style",
+        "startMs": 1208.817,
+        "durMs": 0.164
+      },
+      {
+        "kind": "style",
+        "startMs": 1228.526,
+        "durMs": 0.106
+      },
+      {
+        "kind": "layout",
+        "startMs": 1228.636,
+        "durMs": 0.145
+      },
+      {
+        "kind": "style",
+        "startMs": 1252.489,
+        "durMs": 0.475
+      },
+      {
+        "kind": "layout",
+        "startMs": 1252.971,
+        "durMs": 0.589
+      },
+      {
+        "kind": "style",
+        "startMs": 1265.647,
+        "durMs": 0.181
+      },
+      {
+        "kind": "layout",
+        "startMs": 1265.835,
+        "durMs": 0.208
+      },
+      {
+        "kind": "style",
+        "startMs": 1267.723,
+        "durMs": 0.061
+      }
+    ],
+    "culprits": [
+      {
+        "functionName": "measureHostInstance",
+        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
+        "line": 1,
+        "selfMs": 1.6500000000000001,
+        "sharePct": 15.287686463448532,
+        "app": false
+      },
+      {
+        "functionName": "memoized",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-4T7UYGQA.js?v=94c64cfa",
+        "line": 534,
+        "selfMs": 1.5630000000000002,
+        "sharePct": 14.481608449921248,
+        "app": false
+      },
+      {
+        "functionName": "React.useCallback",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-redux.js?v=ed083144",
+        "line": 1020,
+        "selfMs": 0.759,
+        "sharePct": 7.032335773186325,
+        "app": false
+      },
+      {
+        "functionName": "exports.jsxDEV",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=7f853c5a",
+        "line": 240,
+        "selfMs": 0.5870000000000003,
+        "sharePct": 5.43871027517836,
+        "app": false
+      },
+      {
+        "functionName": "memoizedSelector",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-redux.js?v=ed083144",
+        "line": 27,
+        "selfMs": 0.48600000000000004,
+        "sharePct": 4.502918558324841,
+        "app": false
+      },
+      {
+        "functionName": "react-stack-bottom-frame",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-dom_client.js?v=fdb207b4",
+        "line": 17471,
+        "selfMs": 0.35200000000000004,
+        "sharePct": 3.261373112202354,
+        "app": false
+      },
+      {
+        "functionName": "getTypeSymbol",
+        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
+        "line": 1,
+        "selfMs": 0.276,
+        "sharePct": 2.557213008431391,
+        "app": false
+      },
+      {
+        "functionName": "performAction",
+        "url": "chrome-extension://lmhkpmbekcpmknklioeibfkpmmfibljd/page.bundle.js",
+        "line": 1,
+        "selfMs": 0.254,
+        "sharePct": 2.353377188918744,
+        "app": false
+      },
+      {
+        "functionName": "beginWork",
+        "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-dom_client.js?v=fdb207b4",
+        "line": 7545,
+        "selfMs": 0.214,
+        "sharePct": 1.9827666079866584,
+        "app": false
+      },
+      {
+        "functionName": "updateFiberRecursively",
+        "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
+        "line": 1,
+        "selfMs": 0.20600000000000002,
+        "sharePct": 1.9086444918002412,
+        "app": false
+      }
+    ]
   },
   "gc": null,
   "react": null,
