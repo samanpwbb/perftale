@@ -1,6 +1,6 @@
 # perftale
 
-Performance optimizing web apps can be painful. Instead of staring at flame charts, download the (Chrome) performance trace and run it through perftale. It turns the mostly-noise trace into high signal insights. It is designed for use with web games, and has dedicated React support, but would be useful for any interaction or animation-heavy app.
+Performance optimizing web apps can be painful. Instead of staring at flame charts, download your Chrome performance trace and run it through perftale. It turns the mostly-noise trace into high signal insights. It is designed for use with web games, and has dedicated React support, but would be useful for any interaction or animation-heavy app.
 
 If you check the DevTools **Memory** checkbox, perftale will flag a rising post-GC heap floor, track event-listener/DOM-node/document growth, and point at the JS running while memory grew.
 
