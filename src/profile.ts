@@ -15,6 +15,22 @@ import type { TraceEvent } from './trace-events.ts';
  * absorbs console-instrumentation overhead (`createTask`/`run`) present because
  * the trace was recorded with DevTools attached — we keep it labelled rather
  * than folding it into JS callers, where it would masquerade as app cost.
+ *
+ * The same self-time is rolled up twice, because the two rollups answer
+ * different questions:
+ *
+ *   - by function (`functions`) — which line to open;
+ *   - by source url (`files`)   — which subsystem is expensive.
+ *
+ * The file rollup is not a convenience view. The function rollup has a
+ * systematic blind spot: cost that lives in callbacks and closures is reported
+ * as `(anonymous)` and splinters across many low-ranking rows, so a file whose
+ * whole cost sits in one `queueMicrotask` callback can be the most expensive
+ * first-party file in the trace and still never appear in the top functions.
+ * Callback-heavy code — schedulers, event emitters, store fan-out, framework
+ * internals — is exactly where that happens. `anonymousMs` measures how much of
+ * the trace is exposed to the blind spot, so the report can say when the
+ * function table is under-reporting.
  */
 
 export interface CallFrame {
@@ -49,6 +65,21 @@ export interface HotFunction {
   app: boolean;
 }
 
+/** Self-time rolled up to one source file (`callFrame.url`). */
+export interface HotFile {
+  /** Full source url, as the profiler reported it. */
+  url: string;
+  selfMs: number;
+  /** Share of attributed JS self-time. */
+  sharePct: number;
+  /** True when the source is app code rather than a dependency. */
+  app: boolean;
+  /** Distinct functions charged to this file — 1 means the cost is one place. */
+  functionCount: number;
+  /** Of `selfMs`, how much landed in anonymous functions (the blind spot). */
+  anonymousMs: number;
+}
+
 export interface ProfileModel {
   tid: number | undefined;
   sampleCount: number;
@@ -62,11 +93,33 @@ export interface ProfileModel {
   jsMs: number;
   /** Hottest JS functions by self-time, biggest first. */
   functions: HotFunction[];
+  /**
+   * The same self-time rolled up by source file, each group ranked biggest
+   * first and truncated to `topFiles` independently — so an engine that
+   * dominates the trace can't crowd out the first-party files.
+   */
+  files: { app: HotFile[]; dep: HotFile[] };
+  /** JS self-time in first-party files (across all files, not just the top ones). */
+  appMs: number;
+  /** `appMs` as a share of attributed JS self-time. */
+  appSharePct: number;
+  /** JS self-time in bundled dependencies — the engine/library cost. */
+  depMs: number;
+  /** `depMs` as a share of attributed JS self-time. */
+  depSharePct: number;
+  /** Distinct source files charged any JS self-time. */
+  fileCount: number;
+  /** JS self-time charged to anonymous functions — under-reported by `functions`. */
+  anonymousMs: number;
+  /** `anonymousMs` as a share of attributed JS self-time. */
+  anonymousSharePct: number;
 }
 
 export interface ProfileModelOptions {
   warmupEndUs?: number;
   topFunctions?: number;
+  /** Files kept per group — first-party and dependency are ranked separately. */
+  topFiles?: number;
   /** Renderer process id (from the frame events) — selects the app's profile. */
   mainPid?: number;
 }
@@ -181,6 +234,8 @@ type Target =
       line: number;
       col: number;
       app: boolean;
+      /** The profiler reported no function name — a callback/closure/arrow. */
+      anon: boolean;
     };
 
 const IDLE_TARGET: Target = { kind: 'idle' };
@@ -208,6 +263,9 @@ function resolveTarget(
     const url = frame.url;
     const line = (frame.lineNumber ?? 0) + 1;
     const col = (frame.columnNumber ?? 0) + 1;
+    // The profiler reports callbacks/closures with no name. Record that as a
+    // fact here rather than re-reading it off the display label downstream.
+    const anon = !frame.functionName;
     const name = frame.functionName || '(anonymous)';
     target = {
       kind: 'js',
@@ -217,6 +275,7 @@ function resolveTarget(
       line,
       col,
       app: isAppCode(url),
+      anon,
     };
   } else {
     target = NATIVE_TARGET;
@@ -283,8 +342,25 @@ function buildTimeline(main: RawProfile): { tsArr: Float64Array; order: number[]
 }
 
 /**
+ * In-loop accumulator for one function, converted to `HotFunction` on the way
+ * out — so neither field below reaches the JSON.
+ *
+ * Holds integer µs rather than ms: sample deltas are whole µs, so summing them
+ * is exact and the single divide at the end yields the shortest correct decimal
+ * (accumulating ms instead lets rounding error surface in the goldens). Carries
+ * `anon` so the file rollup can be derived afterwards without re-reading
+ * anonymity off the `(anonymous)` display label — the profiler's "no name" fact
+ * stays a fact, not a string comparison.
+ */
+interface FnAcc extends Omit<HotFunction, 'selfMs' | 'sharePct'> {
+  selfUs: number;
+  anon: boolean;
+}
+
+/**
  * Build the JS-attribution model from the collected profiles. Picks the
- * busiest thread (the renderer main thread) and ranks functions by self-time.
+ * busiest thread (the renderer main thread) and ranks functions by self-time,
+ * and — from the same samples — by source file.
  */
 export function buildProfileModel(
   profiles: RawProfile[],
@@ -297,7 +373,7 @@ export function buildProfileModel(
   const analysisStartUs = Math.max(warmupEndUs, main.startUs);
 
   const memo = new Map<number, Target>();
-  const selfUs = new Map<string, HotFunction>();
+  const selfUs = new Map<string, FnAcc>();
   let idleUs = 0;
   let gcUs = 0;
   let nativeUs = 0;
@@ -331,16 +407,16 @@ export function buildProfileModel(
         jsUs += dt;
         const existing = selfUs.get(target.key);
         if (existing) {
-          existing.selfMs += dt / 1000;
+          existing.selfUs += dt;
         } else {
           selfUs.set(target.key, {
             functionName: target.fn,
             url: target.url,
             line: target.line,
             col: target.col,
-            selfMs: dt / 1000,
-            sharePct: 0,
+            selfUs: dt,
             app: target.app,
+            anon: target.anon,
           });
         }
         break;
@@ -349,11 +425,64 @@ export function buildProfileModel(
   }
 
   const jsMs = jsUs / 1000;
-  const keyOf = (f: HotFunction) => `${f.functionName}@${f.url}:${f.line}`;
-  const functions = [...selfUs.values()]
-    .map((f) => ({ ...f, sharePct: jsMs > 0 ? (f.selfMs / jsMs) * 100 : 0 }))
-    .sort((a, b) => b.selfMs - a.selfMs || (keyOf(a) < keyOf(b) ? -1 : 1))
-    .slice(0, options.topFunctions ?? 25);
+  const share = (ms: number) => (jsMs > 0 ? (ms / jsMs) * 100 : 0);
+  const attributed = [...selfUs.values()];
+  // Rank and truncate on the accumulators, then build output rows only for the
+  // survivors — a trace holds hundreds to thousands of distinct functions and
+  // files, and all but the top few of each would be immediate garbage.
+  const keyOf = (f: FnAcc) => `${f.functionName}@${f.url}:${f.line}`;
+  const functions: HotFunction[] = attributed
+    .sort((a, b) => b.selfUs - a.selfUs || (keyOf(a) < keyOf(b) ? -1 : 1))
+    .slice(0, options.topFunctions ?? 25)
+    .map(({ anon: _anon, selfUs: us, ...f }) => ({
+      ...f,
+      selfMs: us / 1000,
+      sharePct: share(us / 1000),
+    }));
+
+  // The file rollup falls out of the functions already accumulated — every
+  // function belongs to exactly one url — so it costs one pass over the
+  // distinct functions rather than any work per sample.
+  type FileAcc = Omit<HotFile, 'selfMs' | 'sharePct' | 'anonymousMs'> & {
+    selfUs: number;
+    anonUs: number;
+  };
+  const fileMap = new Map<string, FileAcc>();
+  let appUs = 0;
+  let anonUs = 0;
+  for (const fn of attributed) {
+    if (fn.app) appUs += fn.selfUs;
+    if (fn.anon) anonUs += fn.selfUs;
+    let file = fileMap.get(fn.url);
+    if (!file) {
+      file = { url: fn.url, selfUs: 0, app: fn.app, functionCount: 0, anonUs: 0 };
+      fileMap.set(fn.url, file);
+    }
+    file.selfUs += fn.selfUs;
+    file.functionCount++;
+    if (fn.anon) file.anonUs += fn.selfUs;
+  }
+  // Split as the map drains rather than ranking the union and filtering it
+  // twice: the two groups are ranked and truncated independently anyway, so a
+  // merged ranking is work whose result is thrown away.
+  const appFiles: FileAcc[] = [];
+  const depFiles: FileAcc[] = [];
+  for (const file of fileMap.values()) (file.app ? appFiles : depFiles).push(file);
+  const topFiles = options.topFiles ?? 20;
+  const rank = (group: FileAcc[]): HotFile[] =>
+    group
+      .sort((a, b) => b.selfUs - a.selfUs || (a.url < b.url ? -1 : 1))
+      .slice(0, topFiles)
+      .map((f) => ({
+        url: f.url,
+        selfMs: f.selfUs / 1000,
+        sharePct: share(f.selfUs / 1000),
+        app: f.app,
+        functionCount: f.functionCount,
+        anonymousMs: f.anonUs / 1000,
+      }));
+  const appMs = appUs / 1000;
+  const depMs = (jsUs - appUs) / 1000;
 
   return {
     tid: main.tid,
@@ -364,6 +493,14 @@ export function buildProfileModel(
     nativeMs: nativeUs / 1000,
     jsMs,
     functions,
+    files: { app: rank(appFiles), dep: rank(depFiles) },
+    appMs,
+    appSharePct: share(appMs),
+    depMs,
+    depSharePct: share(depMs),
+    fileCount: fileMap.size,
+    anonymousMs: anonUs / 1000,
+    anonymousSharePct: share(anonUs / 1000),
   };
 }
 

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "trace": "pile-up-poker.trace.json.gz",
   "verdict": {
     "smooth": false,
@@ -29,6 +29,12 @@
       "line": 7,
       "selfMs": 0.516
     },
+    "topAppFile": {
+      "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/deckSelectors.ts",
+      "selfMs": 0.835,
+      "sharePct": 4.082331084384473
+    },
+    "anonBlindspot": null,
     "reflow": {
       "forcedLayoutCount": 3,
       "forcedStyleCount": 5,
@@ -153,227 +159,536 @@
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-4T7UYGQA.js?v=94c64cfa",
         "line": 534,
         "col": 20,
+        "app": false,
         "selfMs": 2.424,
-        "sharePct": 11.850982692871808,
-        "app": false
+        "sharePct": 11.850982692871808
       },
       {
         "functionName": "measureHostInstance",
         "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
         "line": 1,
         "col": 93979,
+        "app": false,
         "selfMs": 2.039,
-        "sharePct": 9.968710276718491,
-        "app": false
+        "sharePct": 9.968710276718491
       },
       {
         "functionName": "React.useCallback",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-redux.js?v=ed083144",
         "line": 1020,
         "col": 24,
-        "selfMs": 1.5390000000000001,
-        "sharePct": 7.524200645350543,
-        "app": false
+        "app": false,
+        "selfMs": 1.539,
+        "sharePct": 7.5242006453505414
       },
       {
         "functionName": "pe",
         "url": "chrome-extension://dlkffcaaoccbofklocbjcmppahjjboce/inject/index.js",
         "line": 2110,
         "col": 12,
+        "app": false,
         "selfMs": 0.915,
-        "sharePct": 4.473452625403344,
-        "app": false
+        "sharePct": 4.473452625403344
       },
       {
         "functionName": "exports.jsxDEV",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=7f853c5a",
         "line": 240,
         "col": 32,
-        "selfMs": 0.6570000000000004,
-        "sharePct": 3.2120856556174844,
-        "app": false
+        "app": false,
+        "selfMs": 0.657,
+        "sharePct": 3.212085655617483
       },
       {
         "functionName": "memoizedSelector",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-redux.js?v=ed083144",
         "line": 27,
         "col": 38,
-        "selfMs": 0.6150000000000001,
-        "sharePct": 3.006746846582576,
-        "app": false
+        "app": false,
+        "selfMs": 0.615,
+        "sharePct": 3.0067468465825753
       },
       {
         "functionName": "wrappedSelector",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/createDraftSafeSelector.ts",
         "line": 7,
         "col": 29,
+        "app": true,
         "selfMs": 0.516,
-        "sharePct": 2.522733939571722,
-        "app": true
+        "sharePct": 2.522733939571722
       },
       {
         "functionName": "getState",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/@reduxjs_toolkit.js?v=79e432cb",
         "line": 120,
         "col": 20,
+        "app": false,
         "selfMs": 0.487,
-        "sharePct": 2.380952380952381,
-        "app": false
+        "sharePct": 2.380952380952381
       },
       {
         "functionName": "performAction",
         "url": "chrome-extension://lmhkpmbekcpmknklioeibfkpmmfibljd/page.bundle.js",
         "line": 1,
         "col": 11964,
+        "app": false,
         "selfMs": 0.383,
-        "sharePct": 1.872494377627848,
-        "app": false
+        "sharePct": 1.872494377627848
       },
       {
         "functionName": "renderHTML",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-PNI2FNV6.js?v=94c64cfa",
         "line": 6065,
         "col": 20,
-        "selfMs": 0.36599999999999994,
-        "sharePct": 1.7893810501613372,
-        "app": false
+        "app": false,
+        "selfMs": 0.366,
+        "sharePct": 1.7893810501613376
       },
       {
         "functionName": "react-stack-bottom-frame",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-dom_client.js?v=fdb207b4",
         "line": 17471,
         "col": 45,
+        "app": false,
         "selfMs": 0.356,
-        "sharePct": 1.7404908575339786,
-        "app": false
+        "sharePct": 1.7404908575339786
       },
       {
         "functionName": "t9",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/InnerPositioner.tsx",
         "line": 154,
         "col": 10,
+        "app": true,
         "selfMs": 0.339,
-        "sharePct": 1.6573775300674685,
-        "app": true
+        "sharePct": 1.6573775300674685
       },
       {
         "functionName": "getTypeSymbol",
         "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
         "line": 1,
         "col": 78322,
+        "app": false,
         "selfMs": 0.276,
-        "sharePct": 1.349369316515107,
-        "app": false
+        "sharePct": 1.349369316515107
       },
       {
         "functionName": "O",
         "url": "chrome-extension://lmhkpmbekcpmknklioeibfkpmmfibljd/page.bundle.js",
         "line": 3,
         "col": 1913,
+        "app": false,
         "selfMs": 0.249,
-        "sharePct": 1.2173657964212379,
-        "app": false
+        "sharePct": 1.2173657964212379
       },
       {
         "functionName": "t2",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/Pile.tsx",
         "line": 46,
         "col": 10,
+        "app": true,
         "selfMs": 0.244,
-        "sharePct": 1.1929207001075584,
-        "app": true
+        "sharePct": 1.1929207001075584
       },
       {
         "functionName": "beginWork",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-dom_client.js?v=fdb207b4",
         "line": 7545,
         "col": 25,
+        "app": false,
         "selfMs": 0.214,
-        "sharePct": 1.0462501222254814,
-        "app": false
+        "sharePct": 1.0462501222254814
       },
       {
         "functionName": "getWidth",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/deckSelectors.ts",
         "line": 15,
         "col": 25,
-        "selfMs": 0.20900000000000002,
-        "sharePct": 1.0218050259118021,
-        "app": true
+        "app": true,
+        "selfMs": 0.209,
+        "sharePct": 1.021805025911802
       },
       {
         "functionName": "updateFiberRecursively",
         "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
         "line": 1,
         "col": 116995,
-        "selfMs": 0.20600000000000002,
-        "sharePct": 1.0071379681235944,
-        "app": false
+        "app": false,
+        "selfMs": 0.206,
+        "sharePct": 1.0071379681235944
       },
       {
         "functionName": "setValueForStyle",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-dom_client.js?v=fdb207b4",
         "line": 2213,
         "col": 32,
-        "selfMs": 0.18700000000000003,
-        "sharePct": 0.9142466021316125,
-        "app": false
+        "app": false,
+        "selfMs": 0.187,
+        "sharePct": 0.9142466021316125
       },
       {
         "functionName": "BC",
         "url": "chrome-extension://aeblfdkhhhdcdjpifhhbdiojplfjncoa/inline/injected.js",
         "line": 1,
         "col": 229555,
+        "app": false,
         "selfMs": 0.177,
-        "sharePct": 0.8653564095042534,
-        "app": false
+        "sharePct": 0.8653564095042534
       },
       {
         "functionName": "removeChild",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-dom_client.js?v=fdb207b4",
         "line": 13968,
         "col": 27,
+        "app": false,
         "selfMs": 0.174,
-        "sharePct": 0.8506893517160456,
-        "app": false
+        "sharePct": 0.8506893517160456
       },
       {
         "functionName": "getPileById",
         "url": "http://localhost:3000/pile-up-poker/engine/stateToInputString.ts",
         "line": 5,
         "col": 21,
+        "app": true,
         "selfMs": 0.161,
-        "sharePct": 0.7871321013004791,
-        "app": true
+        "sharePct": 0.7871321013004791
       },
       {
         "functionName": "keyframes",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-PNI2FNV6.js?v=94c64cfa",
         "line": 1300,
         "col": 19,
+        "app": false,
         "selfMs": 0.161,
-        "sharePct": 0.7871321013004791,
-        "app": false
+        "sharePct": 0.7871321013004791
       },
       {
         "functionName": "checkIfSnapshotChanged",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-dom_client.js?v=fdb207b4",
         "line": 4642,
         "col": 38,
+        "app": false,
         "selfMs": 0.159,
-        "sharePct": 0.7773540627750073,
-        "app": false
+        "sharePct": 0.7773540627750073
       },
       {
         "functionName": "handlePressEvent",
         "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-PNI2FNV6.js?v=94c64cfa",
         "line": 9162,
         "col": 26,
+        "app": false,
         "selfMs": 0.151,
-        "sharePct": 0.7382419086731201,
-        "app": false
+        "sharePct": 0.7382419086731201
       }
-    ]
+    ],
+    "files": {
+      "app": [
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/deckSelectors.ts",
+          "selfMs": 0.835,
+          "sharePct": 4.082331084384473,
+          "app": true,
+          "functionCount": 7,
+          "anonymousMs": 0.233
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/createDraftSafeSelector.ts",
+          "selfMs": 0.516,
+          "sharePct": 2.522733939571722,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/InnerPositioner.tsx",
+          "selfMs": 0.485,
+          "sharePct": 2.371174342426909,
+          "app": true,
+          "functionCount": 3,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/pile-up-poker/engine/selectors.ts",
+          "selfMs": 0.33,
+          "sharePct": 1.6133763567028454,
+          "app": true,
+          "functionCount": 3,
+          "anonymousMs": 0.205
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/Pile.tsx",
+          "selfMs": 0.244,
+          "sharePct": 1.1929207001075584,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/pile-up-poker/engine/stateToInputString.ts",
+          "selfMs": 0.164,
+          "sharePct": 0.8017991590886867,
+          "app": true,
+          "functionCount": 2,
+          "anonymousMs": 0.003
+        },
+        {
+          "url": "http://localhost:3000/pile-up-poker/engine/getHandInfo.ts",
+          "selfMs": 0.133,
+          "sharePct": 0.6502395619438741,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/pile-up-poker/renderer/hooks/useStartNextRound.tsx",
+          "selfMs": 0.122,
+          "sharePct": 0.5964603500537792,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0.122
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/CardShadow.tsx",
+          "selfMs": 0.117,
+          "sharePct": 0.5720152537400998,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/chainUpdates.ts",
+          "selfMs": 0.101,
+          "sharePct": 0.4937909455363254,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0.101
+        },
+        {
+          "url": "http://localhost:3000/@react-refresh",
+          "selfMs": 0.079,
+          "sharePct": 0.3862325217561357,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/apps/jig/Jig.tsx",
+          "selfMs": 0.076,
+          "sharePct": 0.371565463967928,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0.076
+        },
+        {
+          "url": "http://localhost:3000/pile-up-poker/renderer/hooks/useKeybindings.tsx",
+          "selfMs": 0.072,
+          "sharePct": 0.3520093869169844,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/pile-up-poker/renderer/Main.tsx",
+          "selfMs": 0.043,
+          "sharePct": 0.21022782829764347,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/pile-up-poker/renderer/overlay/ScoreOverlay.tsx",
+          "selfMs": 0.029,
+          "sharePct": 0.14178155861934097,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/pile-up-poker/renderer/overlay/ScoreLabel.tsx",
+          "selfMs": 0.02,
+          "sharePct": 0.09778038525471791,
+          "app": true,
+          "functionCount": 2,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/Card.tsx",
+          "selfMs": 0.018,
+          "sharePct": 0.0880023467292461,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/waitFor.ts",
+          "selfMs": 0.011,
+          "sharePct": 0.05377921189009484,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0.011
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/packages/lib/deck/CardBack.tsx",
+          "selfMs": 0.009,
+          "sharePct": 0.04400117336462305,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/pile-up-poker/renderer/PileUpButton.tsx",
+          "selfMs": 0.003,
+          "sharePct": 0.014667057788207686,
+          "app": true,
+          "functionCount": 1,
+          "anonymousMs": 0
+        }
+      ],
+      "dep": [
+        {
+          "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js",
+          "selfMs": 2.889,
+          "sharePct": 14.124376650043999,
+          "app": false,
+          "functionCount": 8,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-4T7UYGQA.js?v=94c64cfa",
+          "selfMs": 2.839,
+          "sharePct": 13.879925686907205,
+          "app": false,
+          "functionCount": 5,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-dom_client.js?v=fdb207b4",
+          "selfMs": 2.684,
+          "sharePct": 13.122127701183143,
+          "app": false,
+          "functionCount": 69,
+          "anonymousMs": 0.072
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react-redux.js?v=ed083144",
+          "selfMs": 2.37,
+          "sharePct": 11.586975652684071,
+          "app": false,
+          "functionCount": 5,
+          "anonymousMs": 0.024
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-PNI2FNV6.js?v=94c64cfa",
+          "selfMs": 2.058,
+          "sharePct": 10.061601642710471,
+          "app": false,
+          "functionCount": 33,
+          "anonymousMs": 0.245
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/@reduxjs_toolkit.js?v=79e432cb",
+          "selfMs": 0.966,
+          "sharePct": 4.722792607802875,
+          "app": false,
+          "functionCount": 7,
+          "anonymousMs": 0.223
+        },
+        {
+          "url": "chrome-extension://dlkffcaaoccbofklocbjcmppahjjboce/inject/index.js",
+          "selfMs": 0.95,
+          "sharePct": 4.6445682995991,
+          "app": false,
+          "functionCount": 2,
+          "anonymousMs": 0
+        },
+        {
+          "url": "chrome-extension://lmhkpmbekcpmknklioeibfkpmmfibljd/page.bundle.js",
+          "selfMs": 0.829,
+          "sharePct": 4.052996968808057,
+          "app": false,
+          "functionCount": 4,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=7f853c5a",
+          "selfMs": 0.748,
+          "sharePct": 3.65698640852645,
+          "app": false,
+          "functionCount": 5,
+          "anonymousMs": 0
+        },
+        {
+          "url": "chrome-extension://aeblfdkhhhdcdjpifhhbdiojplfjncoa/inline/injected.js",
+          "selfMs": 0.331,
+          "sharePct": 1.6182653759655812,
+          "app": false,
+          "functionCount": 3,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-FMAUEVSX.js?v=94c64cfa",
+          "selfMs": 0.105,
+          "sharePct": 0.5133470225872689,
+          "app": false,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-5NSVLCKE.js?v=94c64cfa",
+          "selfMs": 0.081,
+          "sharePct": 0.3960105602816075,
+          "app": false,
+          "functionCount": 2,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-HIGUOLGR.js?v=94c64cfa",
+          "selfMs": 0.08,
+          "sharePct": 0.39112154101887164,
+          "app": false,
+          "functionCount": 4,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/@noriginmedia_norigin-spatial-navigation.js?v=3eb7703c",
+          "selfMs": 0.055,
+          "sharePct": 0.26889605945047423,
+          "app": false,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "http://localhost:3000/@fs/Users/samanbemel-benrud/puzmo_repos/games/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=94c64cfa",
+          "selfMs": 0.024,
+          "sharePct": 0.11733646230566148,
+          "app": false,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "chrome-extension://dmghijelimhndkbmpgbldicpogfkceaj/data/content_script/inject.js",
+          "selfMs": 0.022,
+          "sharePct": 0.10755842378018968,
+          "app": false,
+          "functionCount": 1,
+          "anonymousMs": 0
+        },
+        {
+          "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/react_devtools_backend_compact.js",
+          "selfMs": 0.012,
+          "sharePct": 0.05866823115283074,
+          "app": false,
+          "functionCount": 1,
+          "anonymousMs": 0
+        }
+      ]
+    },
+    "appMs": 3.411,
+    "appSharePct": 16.67644470519214,
+    "depMs": 17.043,
+    "depSharePct": 83.32355529480786,
+    "fileCount": 39,
+    "anonymousMs": 1.315,
+    "anonymousSharePct": 6.429060330497702
   },
   "tasks": {
     "mainTid": 7792766,

@@ -34,7 +34,10 @@ export interface Summary {
   verdict: Verdict;
   /** Refresh rate, dropped frames, freezes, and where main-thread frame time goes. */
   frames: FrameModel;
-  /** JS self-time hotspots by function; null when the trace carries no CPU profile. */
+  /**
+   * JS self-time hotspots — by function *and* by source file, plus the app /
+   * dependency split; null when the trace carries no CPU profile.
+   */
   profile: ProfileModel | null;
   /** Long main-thread tasks (>50ms by default). */
   tasks: TaskModel;
@@ -65,6 +68,8 @@ export type {
   Bound,
   GapVerdict,
   Hotspot,
+  HotspotFile,
+  AnonBlindspot,
   ReflowVerdict,
   GcVerdict,
   MemoryVerdict,
@@ -79,6 +84,7 @@ export type {
 export type {
   ProfileModel,
   HotFunction,
+  HotFile,
   AllocatorSuspect,
   WindowedSuspect,
 } from './profile.ts';

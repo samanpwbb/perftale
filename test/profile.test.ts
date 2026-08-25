@@ -78,6 +78,12 @@ const NODES: NodeSpec[] = [
   { id: 5, functionName: '(garbage collector)', parent: 1 },
 ];
 
+/** Sweeps app, app, dep, gc, idle, root; each charged gap is 100µs. */
+const SWEEP_EVENTS = [
+  profileStart('0x2', 100, 1000),
+  chunk('0x2', 100, NODES, [2, 2, 4, 5, 3, 1], [10, 100, 100, 100, 100, 100]),
+];
+
 function model(events: TraceEvent[], opts = {}) {
   const c = new ProfileCollector();
   for (const e of events) c.add(e);
@@ -92,11 +98,7 @@ describe('isProfileEvent', () => {
 });
 
 describe('buildProfileModel', () => {
-  // samples sweep app,app,dep,gc,idle,root; each gap is 100µs
-  const events = [
-    profileStart('0x2', 100, 1000),
-    chunk('0x2', 100, NODES, [2, 2, 4, 5, 3, 1], [10, 100, 100, 100, 100, 100]),
-  ];
+  const events = SWEEP_EVENTS;
 
   it('attributes self-time to leaf functions with source', () => {
     const m = model(events);
@@ -160,5 +162,130 @@ describe('buildProfileModel', () => {
     const m = model(withExtension, { mainPid: 100 })!;
     expect(m.functions.some((f) => f.functionName === 'extHot')).toBe(false);
     expect(m.functions[0]?.functionName).toBe('appFn');
+  });
+});
+
+// The blind spot this rollup exists for: cost that lives in callbacks is
+// reported as `(anonymous)` and splinters across one row per call site, so a
+// file can be the most expensive thing in the trace and still rank below
+// cheaper named functions. `files` must see what `functions` cannot.
+const CALLBACK_NODES: NodeSpec[] = [
+  { id: 1, functionName: '(root)' },
+  {
+    id: 2,
+    functionName: 'namedFn',
+    url: 'http://localhost/src/app.ts',
+    lineNumber: 9,
+    parent: 1,
+  },
+  // Three anonymous call frames in one file — a scheduler's queued callbacks.
+  {
+    id: 6,
+    functionName: '',
+    url: 'http://localhost/src/notifier.ts',
+    lineNumber: 4,
+    parent: 1,
+  },
+  {
+    id: 7,
+    functionName: '',
+    url: 'http://localhost/src/notifier.ts',
+    lineNumber: 19,
+    parent: 1,
+  },
+  {
+    id: 8,
+    functionName: '',
+    url: 'http://localhost/src/notifier.ts',
+    lineNumber: 39,
+    parent: 1,
+  },
+];
+
+describe('buildProfileModel file rollup', () => {
+  // samples: namedFn ×2, then one tick in each anonymous notifier frame.
+  const events = [
+    profileStart('0x2', 100, 1000),
+    chunk('0x2', 100, CALLBACK_NODES, [2, 2, 6, 7, 8, 1], [10, 100, 100, 100, 100, 100]),
+  ];
+
+  it('ranks a file above the functions it outweighs individually', () => {
+    const m = model(events)!;
+    // By function, the named one wins: each anonymous frame is only 0.1ms.
+    expect(m.functions[0]?.functionName).toBe('namedFn');
+    expect(m.functions[0]?.selfMs).toBeCloseTo(0.2, 5);
+    // By file, the callbacks add up and win.
+    expect(m.files.app[0]?.url).toBe('http://localhost/src/notifier.ts');
+    expect(m.files.app[0]?.selfMs).toBeCloseTo(0.3, 5);
+    expect(m.files.app[1]?.url).toBe('http://localhost/src/app.ts');
+    expect(m.files.app[1]?.selfMs).toBeCloseTo(0.2, 5);
+  });
+
+  it('records how a file’s cost is spread, and how much is anonymous', () => {
+    const m = model(events)!;
+    const notifier = m.files.app[0]!;
+    expect(notifier.functionCount).toBe(3);
+    expect(notifier.anonymousMs).toBeCloseTo(0.3, 5);
+    const app = m.files.app[1]!;
+    expect(app.functionCount).toBe(1);
+    expect(app.anonymousMs).toBe(0);
+  });
+
+  it('keeps the anonymity flag out of the serialized functions', () => {
+    const m = model(events)!;
+    expect(m.functions[0]).not.toHaveProperty('anon');
+  });
+
+  it('measures the trace-wide anonymous share of JS self-time', () => {
+    const m = model(events)!;
+    expect(m.jsMs).toBeCloseTo(0.5, 5);
+    expect(m.anonymousMs).toBeCloseTo(0.3, 5);
+    expect(m.anonymousSharePct).toBeCloseTo(60, 5);
+  });
+
+  it('tags dependency files and splits the totals', () => {
+    const m = model(SWEEP_EVENTS)!;
+    expect(m.fileCount).toBe(2);
+    expect(m.appMs).toBeCloseTo(0.2, 5);
+    expect(m.depMs).toBeCloseTo(0.1, 5);
+    expect(m.files.app[0]?.url).toBe('http://localhost/src/app.ts');
+    expect(m.files.dep[0]?.url).toBe('http://localhost/node_modules/x.js');
+    // Shares are of attributed JS time, so they sum with the function shares.
+    const all = [...m.files.app, ...m.files.dep];
+    expect(all.reduce((n, f) => n + f.sharePct, 0)).toBeCloseTo(100, 5);
+  });
+
+  it('truncates first-party and dependency files separately', () => {
+    // Two app files and two dep files; topFiles:1 must keep one of each rather
+    // than letting whichever group is hotter take both slots.
+    const nodes: NodeSpec[] = [
+      { id: 1, functionName: '(root)' },
+      { id: 2, functionName: 'a', url: 'http://x/src/a.ts', lineNumber: 0, parent: 1 },
+      { id: 3, functionName: 'b', url: 'http://x/src/b.ts', lineNumber: 0, parent: 1 },
+      {
+        id: 4,
+        functionName: 'c',
+        url: 'http://x/node_modules/c.js',
+        lineNumber: 0,
+        parent: 1,
+      },
+      {
+        id: 5,
+        functionName: 'd',
+        url: 'http://x/node_modules/d.js',
+        lineNumber: 0,
+        parent: 1,
+      },
+    ];
+    const m = model(
+      [
+        profileStart('0x2', 100, 1000),
+        chunk('0x2', 100, nodes, [4, 5, 2, 3, 1], [10, 400, 300, 200, 100]),
+      ],
+      { topFiles: 1 },
+    )!;
+    expect(m.fileCount).toBe(4);
+    expect(m.files.app).toHaveLength(1);
+    expect(m.files.dep).toHaveLength(1);
   });
 });

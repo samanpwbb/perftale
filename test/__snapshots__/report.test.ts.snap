@@ -69,6 +69,19 @@ JS  self-time by function
    1.0ms     1%  APP  R9                         assets/index-CyoXiGX1.js:1866
    1.0ms     1%  APP  execute                    assets/pixi-DRolKATm.js:813
 
+FILES  self-time by source file
+  158ms app code (97%) · 6ms dependencies (3%) · 4 files
+
+  app code — first-party by source path
+    self  share  file                      spread
+  98.6ms  60.0%  assets/pixi-DRolKATm.js   92 fns
+  59.9ms  36.5%  assets/index-CyoXiGX1.js  51 fns
+
+  dependencies — engine/library code; the lever is fewer calls in
+   self  share  file             spread
+  5.5ms   3.4%  build/proxy.js   2 fns
+  0.2ms   0.1%  inject/index.js  1 fn
+
 scanned in 0.0s"
 `;
 
@@ -126,7 +139,20 @@ JS  self-time by function
    2.4ms     1%  APP  addRenderable              assets/pixi-DRolKATm.js:1054
    2.1ms     1%  APP  updateGpuContext           assets/pixi-DRolKATm.js:261
    1.8ms     1%  APP  F_                         assets/index-CyoXiGX1.js:1397
-  … and 10 more (--debug)"
+  … and 10 more (--debug)
+
+FILES  self-time by source file
+  158ms app code (97%) · 6ms dependencies (3%) · 4 files
+
+  app code — first-party by source path
+    self  share  file                      spread
+  98.6ms  60.0%  assets/pixi-DRolKATm.js   92 fns
+  59.9ms  36.5%  assets/index-CyoXiGX1.js  51 fns
+
+  dependencies — engine/library code; the lever is fewer calls in
+   self  share  file             spread
+  5.5ms   3.4%  build/proxy.js   2 fns
+  0.2ms   0.1%  inject/index.js  1 fn"
 `;
 
 exports[`renderReport > orb-ball.trace.json.gz renders a stable --debug report 1`] = `
@@ -134,8 +160,9 @@ exports[`renderReport > orb-ball.trace.json.gz renders a stable --debug report 1
 
 VERDICT
   60fps, 0 dropped frames — running close to budget
-  bound    animation · 96% of main-thread frame time
-  hotspot  sampleHeight  terrain/elevationField.ts:138 · 11ms self
+  bound     animation · 96% of main-thread frame time
+  hotspot   sampleHeight  terrain/elevationField.ts:138 · 11ms self
+  hot file  terrain/TerrainSpriteLayer.tsx · 19ms self · 6.9% of JS
   notes
     • React: 1023 component renders across 10 components (134ms, React DevTools timing).
       Most-rendered: ForwardRef(motion.div) ×381 — frequent re-renders are the usual
@@ -324,6 +351,55 @@ JS  self-time by function
    2.1ms     1%       getAttribute                 deps/chunk-D7CXWU2I.js:6321
    2.1ms     1%       prepareFreshStack            deps/react-dom_client.js:12095
 
+FILES  self-time by source file
+  94ms app code (33%) · 188ms dependencies (67%) · 138 files
+
+  app code — first-party by source path
+    self  share  file                               spread
+  19.4ms   6.9%  terrain/TerrainSpriteLayer.tsx     4 fns · 64% anon
+  11.4ms   4.0%  terrain/elevationField.ts          2 fns
+   8.1ms   2.9%  camera/perspective.ts              10 fns
+   5.3ms   1.9%  utils/stateChecksum.ts             5 fns
+   4.5ms   1.6%  shared/boardShape.ts               3 fns
+   4.5ms   1.6%  Simulation/Simulation.ts           10 fns
+   3.7ms   1.3%  Simulation/MovementSystem.ts       10 fns
+   2.5ms   0.9%  creature/EntitySimRenderer.tsx     1 fn · 100% anon
+   2.0ms   0.7%  utils/frameChangeTracker.ts        1 fn
+   1.4ms   0.5%  wind/simplexNoise.ts               1 fn
+   1.3ms   0.5%  camera/perspectiveDrawing.ts       1 fn
+   1.2ms   0.4%  environment/IslandBorderShade.tsx  1 fn
+   1.2ms   0.4%  Simulation/EntityQueries.ts        8 fns
+   1.1ms   0.4%  Simulation/SimulationUtils.ts      6 fns
+   1.0ms   0.4%  mesh/gridMesh.ts                   1 fn
+   1.0ms   0.3%  terrain/RockScatterLayer.tsx       2 fns · 57% anon
+   0.9ms   0.3%  camera/useCameraDirtyTick.ts       1 fn
+   0.8ms   0.3%  utils/attackUtils.ts               6 fns
+   0.8ms   0.3%  orb/OrbSimRenderer.tsx             3 fns
+   0.8ms   0.3%  wind/windField.ts                  2 fns
+
+  dependencies — engine/library code; the lever is fewer calls in
+    self  share  file                           spread
+  43.4ms  15.4%  deps/chunk-VTQOOOML.js         27 fns
+  22.5ms   8.0%  deps/chunk-OKHOTB3R.js         18 fns
+  21.9ms   7.8%  deps/chunk-KZO5MPJJ.js         19 fns
+  17.5ms   6.2%  deps/chunk-ZUSEKPXC.js         32 fns
+  16.9ms   6.0%  deps/@pixi_layout.js           7 fns
+  12.3ms   4.4%  deps/@pixi_react.js            73 fns
+   8.3ms   3.0%  deps/chunk-D7CXWU2I.js         31 fns
+   7.3ms   2.6%  deps/react-dom_client.js       120 fns
+   6.2ms   2.2%  build/installHook.js           22 fns
+   5.2ms   1.8%  deps/motion_react.js           67 fns
+   4.9ms   1.7%  deps/chunk-FX5RIZCN.js         19 fns
+   4.8ms   1.7%  deps/react_jsx-dev-runtime.js  8 fns
+   3.6ms   1.3%  deps/chunk-HBPTRB7F.js         9 fns
+   3.3ms   1.2%  deps/chunk-4GY5Y4W2.js         13 fns
+   2.2ms   0.8%  deps/chunk-RWQKMJRR.js         8 fns
+   2.0ms   0.7%  deps/react-redux.js            4 fns
+   1.8ms   0.6%  deps/chunk-D5R4NKOJ.js         10 fns
+   1.6ms   0.6%  deps/chunk-FXIUL2ST.js         7 fns
+   0.9ms   0.3%  deps/chunk-ESQI3SWO.js         6 fns
+   0.4ms   0.2%  deps/chunk-IIQD5U5D.js         1 fn
+
 scanned in 0.0s"
 `;
 
@@ -332,8 +408,9 @@ exports[`renderReport > orb-ball.trace.json.gz renders a stable default report 1
 
 VERDICT
   60fps, 0 dropped frames — running close to budget
-  bound    animation · 96% of main-thread frame time
-  hotspot  sampleHeight  terrain/elevationField.ts:138 · 11ms self
+  bound     animation · 96% of main-thread frame time
+  hotspot   sampleHeight  terrain/elevationField.ts:138 · 11ms self
+  hot file  terrain/TerrainSpriteLayer.tsx · 19ms self · 6.9% of JS
   notes
     • React: 1023 component renders across 10 components (134ms, React DevTools timing).
       Most-rendered: ForwardRef(motion.div) ×381 — frequent re-renders are the usual
@@ -429,6 +506,37 @@ JS  self-time by function
    3.3ms     1%       measureHostInstance          build/installHook.js:1
    3.2ms     1%  APP  (anonymous)                  terrain/TerrainSpriteLayer.tsx:183
    3.1ms     1%       set                          deps/chunk-VTQOOOML.js:93
+  … and 10 more (--debug)
+
+FILES  self-time by source file
+  94ms app code (33%) · 188ms dependencies (67%) · 138 files
+
+  app code — first-party by source path
+    self  share  file                            spread
+  19.4ms   6.9%  terrain/TerrainSpriteLayer.tsx  4 fns · 64% anon
+  11.4ms   4.0%  terrain/elevationField.ts       2 fns
+   8.1ms   2.9%  camera/perspective.ts           10 fns
+   5.3ms   1.9%  utils/stateChecksum.ts          5 fns
+   4.5ms   1.6%  shared/boardShape.ts            3 fns
+   4.5ms   1.6%  Simulation/Simulation.ts        10 fns
+   3.7ms   1.3%  Simulation/MovementSystem.ts    10 fns
+   2.5ms   0.9%  creature/EntitySimRenderer.tsx  1 fn · 100% anon
+   2.0ms   0.7%  utils/frameChangeTracker.ts     1 fn
+   1.4ms   0.5%  wind/simplexNoise.ts            1 fn
+  … and 10 more (--debug)
+
+  dependencies — engine/library code; the lever is fewer calls in
+    self  share  file                      spread
+  43.4ms  15.4%  deps/chunk-VTQOOOML.js    27 fns
+  22.5ms   8.0%  deps/chunk-OKHOTB3R.js    18 fns
+  21.9ms   7.8%  deps/chunk-KZO5MPJJ.js    19 fns
+  17.5ms   6.2%  deps/chunk-ZUSEKPXC.js    32 fns
+  16.9ms   6.0%  deps/@pixi_layout.js      7 fns
+  12.3ms   4.4%  deps/@pixi_react.js       73 fns
+   8.3ms   3.0%  deps/chunk-D7CXWU2I.js    31 fns
+   7.3ms   2.6%  deps/react-dom_client.js  120 fns
+   6.2ms   2.2%  build/installHook.js      22 fns
+   5.2ms   1.8%  deps/motion_react.js      67 fns
   … and 10 more (--debug)"
 `;
 
@@ -437,8 +545,9 @@ exports[`renderReport > pile-up-poker.trace.json.gz renders a stable --debug rep
 
 VERDICT
   60fps, 3 dropped frames (3.9%) — worst freeze 48ms at 1.20s, blocked by a 65ms task
-  bound    paint/composite · 61% of main-thread frame time
-  hotspot  wrappedSelector  lib/createDraftSafeSelector.ts:7 · 1ms self
+  bound     paint/composite · 61% of main-thread frame time
+  hotspot   wrappedSelector  lib/createDraftSafeSelector.ts:7 · 1ms self
+  hot file  deck/deckSelectors.ts · 1ms self · 4.1% of JS
   notes
     • Dev build detected (React dev runtime) — record a production build for
       representative numbers.
@@ -552,6 +661,52 @@ JS  self-time by function
   0.2ms     1%       checkIfSnapshotChanged    deps/react-dom_client.js:4642
   0.2ms     1%       handlePressEvent          deps/chunk-PNI2FNV6.js:9162
 
+FILES  self-time by source file
+  3ms app code (17%) · 17ms dependencies (83%) · 39 files
+
+  app code — first-party by source path
+   self  share  file                            spread
+  0.8ms   4.1%  deck/deckSelectors.ts           7 fns
+  0.5ms   2.5%  lib/createDraftSafeSelector.ts  1 fn
+  0.5ms   2.4%  deck/InnerPositioner.tsx        3 fns
+  0.3ms   1.6%  engine/selectors.ts             3 fns · 62% anon
+  0.2ms   1.2%  deck/Pile.tsx                   1 fn
+  0.2ms   0.8%  engine/stateToInputString.ts    2 fns
+  0.1ms   0.7%  engine/getHandInfo.ts           1 fn
+  0.1ms   0.6%  hooks/useStartNextRound.tsx     1 fn · 100% anon
+  0.1ms   0.6%  deck/CardShadow.tsx             1 fn
+  0.1ms   0.5%  lib/chainUpdates.ts             1 fn · 100% anon
+  0.1ms   0.4%  localhost:3000/@react-refresh   1 fn
+  0.1ms   0.4%  jig/Jig.tsx                     1 fn · 100% anon
+  0.1ms   0.4%  hooks/useKeybindings.tsx        1 fn
+  0.0ms   0.2%  renderer/Main.tsx               1 fn
+  0.0ms   0.1%  overlay/ScoreOverlay.tsx        1 fn
+  0.0ms   0.1%  overlay/ScoreLabel.tsx          2 fns
+  0.0ms   0.1%  deck/Card.tsx                   1 fn
+  0.0ms   0.1%  lib/waitFor.ts                  1 fn · 100% anon
+  0.0ms   0.0%  deck/CardBack.tsx               1 fn
+  0.0ms   0.0%  renderer/PileUpButton.tsx       1 fn
+
+  dependencies — engine/library code; the lever is fewer calls in
+   self  share  file                                spread
+  2.9ms  14.1%  build/installHook.js                8 fns
+  2.8ms  13.9%  deps/chunk-4T7UYGQA.js              5 fns
+  2.7ms  13.1%  deps/react-dom_client.js            69 fns
+  2.4ms  11.6%  deps/react-redux.js                 5 fns
+  2.1ms  10.1%  deps/chunk-PNI2FNV6.js              33 fns
+  1.0ms   4.7%  deps/@reduxjs_toolkit.js            7 fns
+  0.9ms   4.6%  inject/index.js                     2 fns
+  0.8ms   4.1%  lmhkpmbekcpmknklioeibfkpmmfibljd/page.bundle.js  4 fns
+  0.7ms   3.7%  deps/react_jsx-dev-runtime.js       5 fns
+  0.3ms   1.6%  inline/injected.js                  3 fns
+  0.1ms   0.5%  deps/chunk-FMAUEVSX.js              1 fn
+  0.1ms   0.4%  deps/chunk-5NSVLCKE.js              2 fns
+  0.1ms   0.4%  deps/chunk-HIGUOLGR.js              4 fns
+  0.1ms   0.3%  deps/@noriginmedia_norigin-spatial-navigation.js  1 fn
+  0.0ms   0.1%  deps/chunk-DP4XHQAG.js              1 fn
+  0.0ms   0.1%  content_script/inject.js            1 fn
+  0.0ms   0.1%  build/react_devtools_backend_compact.js  1 fn
+
   dropped-frame clusters
   1.22s–1.25s  3 frame(s)
 
@@ -563,8 +718,9 @@ exports[`renderReport > pile-up-poker.trace.json.gz renders a stable default rep
 
 VERDICT
   60fps, 3 dropped frames (3.9%) — worst freeze 48ms at 1.20s, blocked by a 65ms task
-  bound    paint/composite · 61% of main-thread frame time
-  hotspot  wrappedSelector  lib/createDraftSafeSelector.ts:7 · 1ms self
+  bound     paint/composite · 61% of main-thread frame time
+  hotspot   wrappedSelector  lib/createDraftSafeSelector.ts:7 · 1ms self
+  hot file  deck/deckSelectors.ts · 1ms self · 4.1% of JS
   notes
     • Dev build detected (React dev runtime) — record a production build for
       representative numbers.
@@ -649,5 +805,36 @@ JS  self-time by function
   0.3ms     1%       getTypeSymbol             build/installHook.js:1
   0.2ms     1%       O                         lmhkpmbekcpmknklioeibfkpmmfibljd/page.bundle.js:3
   0.2ms     1%  APP  t2                        deck/Pile.tsx:46
-  … and 10 more (--debug)"
+  … and 10 more (--debug)
+
+FILES  self-time by source file
+  3ms app code (17%) · 17ms dependencies (83%) · 39 files
+
+  app code — first-party by source path
+   self  share  file                            spread
+  0.8ms   4.1%  deck/deckSelectors.ts           7 fns
+  0.5ms   2.5%  lib/createDraftSafeSelector.ts  1 fn
+  0.5ms   2.4%  deck/InnerPositioner.tsx        3 fns
+  0.3ms   1.6%  engine/selectors.ts             3 fns · 62% anon
+  0.2ms   1.2%  deck/Pile.tsx                   1 fn
+  0.2ms   0.8%  engine/stateToInputString.ts    2 fns
+  0.1ms   0.7%  engine/getHandInfo.ts           1 fn
+  0.1ms   0.6%  hooks/useStartNextRound.tsx     1 fn · 100% anon
+  0.1ms   0.6%  deck/CardShadow.tsx             1 fn
+  0.1ms   0.5%  lib/chainUpdates.ts             1 fn · 100% anon
+  … and 10 more (--debug)
+
+  dependencies — engine/library code; the lever is fewer calls in
+   self  share  file                                spread
+  2.9ms  14.1%  build/installHook.js                8 fns
+  2.8ms  13.9%  deps/chunk-4T7UYGQA.js              5 fns
+  2.7ms  13.1%  deps/react-dom_client.js            69 fns
+  2.4ms  11.6%  deps/react-redux.js                 5 fns
+  2.1ms  10.1%  deps/chunk-PNI2FNV6.js              33 fns
+  1.0ms   4.7%  deps/@reduxjs_toolkit.js            7 fns
+  0.9ms   4.6%  inject/index.js                     2 fns
+  0.8ms   4.1%  lmhkpmbekcpmknklioeibfkpmmfibljd/page.bundle.js  4 fns
+  0.7ms   3.7%  deps/react_jsx-dev-runtime.js       5 fns
+  0.3ms   1.6%  inline/injected.js                  3 fns
+  … and 7 more (--debug)"
 `;
