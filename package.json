@@ -1,6 +1,6 @@
 {
   "name": "perftale",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "description": "Turn a Chrome performance trace into actionable, agent-readable insights for animation- and interaction-heavy apps.",
