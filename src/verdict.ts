@@ -1,7 +1,7 @@
 import type { FrameModel } from './frames.ts';
 import type { GcModel } from './gc.ts';
 import type { MemoryModel } from './memory.ts';
-import type { ProfileModel } from './profile.ts';
+import type { HotFile, ProfileModel } from './profile.ts';
 import { mostRerendered, type ReactModel } from './react.ts';
 import type { ReflowModel } from './reflow.ts';
 import { blockingTask, type TaskModel } from './tasks.ts';
@@ -13,6 +13,15 @@ import { blockingTask, type TaskModel } from './tasks.ts';
  */
 
 export type Bound = 'animation' | 'layout' | 'paint/composite' | 'idle';
+
+/**
+ * Anonymous-function share of JS self-time above which the by-function ranking
+ * is judged to be under-reporting: below this the scatter across `(anonymous)`
+ * rows is noise, above it the ranking is materially wrong and the file rollup
+ * is the one to trust. Private — consumers read `Verdict.anonBlindspot`, so the
+ * judgment is made once here rather than re-derived per renderer.
+ */
+const ANON_BLINDSPOT_PCT = 15;
 
 /** Which pipeline domain each main-thread phase belongs to. */
 const PHASE_DOMAIN: Record<string, Exclude<Bound, 'idle'>> = {
@@ -41,6 +50,28 @@ export interface Hotspot {
   url: string;
   line: number;
   selfMs: number;
+}
+
+/**
+ * The heaviest first-party source file. Reported next to `topAppHotspot`
+ * because the two can disagree: when a file's cost lives in anonymous
+ * callbacks it never surfaces as a top function, so the hottest *function*
+ * and the hottest *file* point at different subsystems. When they disagree,
+ * the file is usually the better place to start.
+ */
+export type HotspotFile = Pick<HotFile, 'url' | 'selfMs' | 'sharePct'>;
+
+/**
+ * Set when anonymous functions hold enough of JS self-time that the by-function
+ * ranking is materially under-reporting — callbacks and closures splinter across
+ * many low-ranking `(anonymous)` rows, so the file rollup is the one to read.
+ * Null when the scatter is small enough to be noise.
+ */
+export interface AnonBlindspot {
+  /** JS self-time charged to anonymous functions, ms. */
+  selfMs: number;
+  /** That time as a share of attributed JS self-time. */
+  sharePct: number;
 }
 
 export interface GcVerdict {
@@ -137,6 +168,15 @@ export interface Verdict {
   worstFreeze: GapVerdict | null;
   /** The top first-party function to look at, if any. */
   topAppHotspot: Hotspot | null;
+  /**
+   * The top first-party *file*, but only when it names a file the `topAppHotspot`
+   * function doesn't — that disagreement is the whole signal, and it is a fact
+   * about the data rather than a rendering rule. Consumers wanting the hottest
+   * app file unconditionally already have `profile.files.app[0]`.
+   */
+  topAppFile: HotspotFile | null;
+  /** Set when the by-function ranking under-reports; see `AnonBlindspot`. */
+  anonBlindspot: AnonBlindspot | null;
   /** Forced synchronous layout summary, when any layout was forced. */
   reflow: ReflowVerdict | null;
   /** GC pressure summary, when the trace has v8.gc instrumentation. */
@@ -272,6 +312,17 @@ export function buildVerdict(
     ? { functionName: app.functionName, url: app.url, line: app.line, selfMs: app.selfMs }
     : null;
 
+  const appFile = profile?.files.app[0];
+  const topAppFile: HotspotFile | null =
+    appFile && appFile.url !== topAppHotspot?.url
+      ? { url: appFile.url, selfMs: appFile.selfMs, sharePct: appFile.sharePct }
+      : null;
+
+  const anonBlindspot: AnonBlindspot | null =
+    profile && profile.anonymousSharePct >= ANON_BLINDSPOT_PCT
+      ? { selfMs: profile.anonymousMs, sharePct: profile.anonymousSharePct }
+      : null;
+
   const notes: string[] = [];
 
   let reactVerdict: ReactVerdict | null = null;
@@ -315,6 +366,14 @@ export function buildVerdict(
   if (fns.some((f) => /-extension:\/\//.test(f.url))) {
     notes.push(
       'Browser extensions were active during capture — engine/native time is inflated.',
+    );
+  }
+  if (anonBlindspot) {
+    notes.push(
+      `${anonBlindspot.selfMs.toFixed(0)}ms (${anonBlindspot.sharePct.toFixed(0)}%) of JS ` +
+        `self-time is in anonymous functions — callbacks and closures, which the ` +
+        `by-function ranking splits across many low-ranking \`(anonymous)\` rows. ` +
+        `Rank by file (FILES / \`profile.files\`) to see which subsystem that cost belongs to.`,
     );
   }
   if (profile && profile.nativeMs > profile.jsMs * 2) {
@@ -510,6 +569,8 @@ export function buildVerdict(
     largestGap,
     worstFreeze,
     topAppHotspot,
+    topAppFile,
+    anonBlindspot,
     reflow: reflowVerdict,
     gc: gcVerdict,
     memory: memoryVerdict,

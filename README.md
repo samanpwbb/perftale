@@ -4,6 +4,8 @@ Performance optimizing web apps can be painful. Instead of staring at flame char
 
 If you check the DevTools **Memory** checkbox, perftale will flag a rising post-GC heap floor, track event-listener/DOM-node/document growth, and point at the JS running while memory grew.
 
+JS self-time is reported two ways, because ranking functions alone has a blind spot: work done in callbacks and closures is reported as `(anonymous)` and splinters across many low-ranking rows, so a file whose whole cost sits in one scheduler callback can be the most expensive first-party file in the trace and never appear in the function table. **JS** ranks functions (which line to open); **FILES** ranks source files, first-party and dependencies separately (which subsystem is expensive, and how much of the frame belongs to the engine).
+
 ## Installation
 
 Requires Node 23.6+ (runs TypeScript natively, no build step) and pnpm.
@@ -70,16 +72,16 @@ Running with `--json` (or `--out <path>`) writes a structured summary to
 The full output shape is declared as a single TypeScript type in
 [`src/summary-schema.ts`](src/summary-schema.ts) (the `Summary` interface, versioned by `SUMMARY_SCHEMA_VERSION`). Top-level keys:
 
-| key             | meaning                                                                                                         |
-| --------------- | --------------------------------------------------------------------------------------------------------------- |
-| `schemaVersion` | artifact schema version; bumps on any shape change                                                              |
-| `trace`         | source trace filename                                                                                           |
-| `verdict`       | the conclusion — headline, what the frame is bound by, top hotspot, caveats                                     |
-| `frames`        | refresh rate, dropped frames, freezes, and where main-thread frame time goes                                    |
-| `profile`       | JS self-time hotspots by function (`null` if the trace has no CPU profile)                                      |
-| `tasks`         | long main-thread tasks (>50ms)                                                                                  |
-| `gc`            | GC pause pressure and suspected allocators (`null` if no v8.gc data)                                            |
-| `memory`        | retained-memory growth — heap floor, listeners, nodes, documents + leak suspects (`null` if no Memory counters) |
-| `react`         | component-render digest from React DevTools timing (`null` if absent)                                           |
-| `frameDrops`    | per-freeze cause + a coincidence verdict (is GC/reflow/long-tasks to blame); `null` if none dropped             |
-| `size`          | noise-reduction stats for the streaming pass (debug only)                                                       |
+| key             | meaning                                                                                                                          |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `schemaVersion` | artifact schema version; bumps on any shape change                                                                               |
+| `trace`         | source trace filename                                                                                                            |
+| `verdict`       | the conclusion — headline, what the frame is bound by, top hotspot, caveats                                                      |
+| `frames`        | refresh rate, dropped frames, freezes, and where main-thread frame time goes                                                     |
+| `profile`       | JS self-time hotspots by function **and** by source file, plus the app/dependency split (`null` if the trace has no CPU profile) |
+| `tasks`         | long main-thread tasks (>50ms)                                                                                                   |
+| `gc`            | GC pause pressure and suspected allocators (`null` if no v8.gc data)                                                             |
+| `memory`        | retained-memory growth — heap floor, listeners, nodes, documents + leak suspects (`null` if no Memory counters)                  |
+| `react`         | component-render digest from React DevTools timing (`null` if absent)                                                            |
+| `frameDrops`    | per-freeze cause + a coincidence verdict (is GC/reflow/long-tasks to blame); `null` if none dropped                              |
+| `size`          | noise-reduction stats for the streaming pass (debug only)                                                                        |

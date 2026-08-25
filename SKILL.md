@@ -7,7 +7,7 @@ description: Turn a Chrome DevTools performance trace into actionable runtime-pe
 
 perftale reduces a huge Chrome performance trace (hundreds of MB) into a compact,
 structured summary: whether the app is smooth, where the per-frame budget goes, and
-which functions (`file:line`) to fix. It targets **runtime** performance of
+which files and functions (`file:line`) to fix. It targets **runtime** performance of
 animation/interaction-heavy apps — 60fps game loops, canvas/pixi, DOM/React/Motion UIs
 — **not** startup or load time.
 
@@ -41,6 +41,10 @@ Inverted pyramid — conclusion first, then the numbers behind it.
 - `bound` — the dominant main-thread domain (`animation` / `layout` / `paint/composite`)
   and its share. **This is where to look.**
 - `hotspot` — top first-party (`APP`) function to open, with `file:line`.
+- `hot file` — top first-party **file** by self-time. Shown **only when it disagrees
+  with `hotspot`**, because that disagreement is the signal: the function ranking
+  can't see cost that lives in anonymous callbacks (see **JS** / **FILES** below), the
+  file ranking can. When it appears, start there.
 - `note` — caveats that temper the numbers (dev build, extensions, instrumentation
   overhead). Heed before trusting magnitudes.
 
@@ -143,13 +147,43 @@ unless recorded with DevTools attached, i.e. local dev). Authoritative, not a he
   `self` excludes nested children.
 - DevTools recording inflates the ms — read **counts** as primary, ms as relative.
 
-**JS** — self-time by function; the code to fix.
+**JS** — self-time by function; the line to fix.
 
 - `active CPU … : Xms JS / Yms engine+native / Zms GC` — a large `engine+native` bucket
   is usually console-instrumentation overhead from recording with DevTools attached.
   **Not app code — don't "fix" it.**
 - Each row `self  share  [APP]  fn  location` (a dim header names the columns):
   `APP` = first-party source. Open those `file:line`s first.
+- **This table has a known blind spot.** Work done in a callback or closure has no
+  function name, so it's reported as `(anonymous)` — one row per call site. An
+  expensive scheduler/emitter/subscription callback therefore splinters into many
+  small rows and ranks below cheaper named functions. When anonymous rows hold ≥15%
+  of JS self-time the section says so under the table, and `verdict.anonBlindspot`
+  carries the same conclusion (with a note in `verdict.notes`) in the JSON. Heed it:
+  the top of this table can be genuinely misleading in callback-heavy code
+  (schedulers, event emitters, store fan-out, React internals).
+
+**FILES** — the _same_ self-time rolled up by source file; which subsystem is expensive.
+Answers a different question from **JS**: file-level says which subsystem, function-level
+says which line. Use both.
+
+- The headline `Xms app code (N%) · Yms dependencies (M%) · K files` is the framing
+  number: **if most JS is inside dependencies, the fix is to give the engine less to
+  do — fewer sprites, fewer nodes, fewer reactive updates — not to micro-optimize your
+  own functions.**
+- Two rankings, deliberately separate: `app code` and `dependencies` (engine/library
+  code). Each is ranked independently so an engine that dominates the trace can't crowd
+  the app files out of view.
+- **The split is by source path**, the same test behind the `APP` tag: a url is a
+  dependency if it looks like `node_modules` / `.vite` / `deps` / an extension. On a
+  dev server that is accurate. On a **fully bundled production build every file is one
+  or two chunks**, so everything lands in `app code` and the split degenerates — read
+  the per-file rows, not the headline, when the file list is a handful of hashed
+  bundle names.
+- The `spread` column says how a file's cost is distributed: `4 fns`, and `· N% anon`
+  when at least half of it is anonymous. **`1 fn · 100% anon` means one callback holds
+  the entire file's cost and the JS table filed it under `(anonymous)`** — that file is
+  invisible above and is often the thing to fix.
 
 ## Investigation workflow
 
@@ -164,11 +198,17 @@ unless recorded with DevTools attached, i.e. local dev). Authoritative, not a he
      script, so a "forced reflow" finding can explain an `animation`-looking bound.
    - `paint` / `composite` → **rendering-bound** (too many/large layers, layout-animating
      Motion, big repaints). JS will be small — don't chase it.
-4. **JS-bound:** open the top `APP` functions. Look for per-frame work that shouldn't
-   repeat: allocation (GC), recomputing cacheable values, re-triangulating unchanged
-   geometry, walking the whole scene graph. Dependency rows (pixi/motion/earcut) show
-   which _subsystem_ is hot even when you can't edit it — reduce calls into it.
-   Cross-reference GC suspected-allocators against these hot functions.
+4. **JS-bound:** read **FILES** before **JS** — first-party ranking tells you which
+   subsystem to open, and the app/dependency split tells you whether the lever is your
+   code or the number of calls into the engine. Then open the top `APP` functions in
+   **JS** for the line. Look for per-frame work that shouldn't repeat: allocation (GC),
+   recomputing cacheable values, re-triangulating unchanged geometry, walking the whole
+   scene graph. Dependency files (pixi/motion/earcut) show which _subsystem_ is hot even
+   when you can't edit it — reduce calls into it. Cross-reference GC
+   suspected-allocators against these hot functions.
+   **If a top file has no matching row in JS, its cost is in a callback** — grep the
+   file for `queueMicrotask` / `requestAnimationFrame` / `.on(` / `subscribe` /
+   `useSyncExternalStore` and read the closure it hands over.
 5. **React UIs:** check `×renders` first — a component rendering many times per frame is
    almost always it (memoize, move state down, stabilize props). Then `selfMs` for
    expensive individual renders. Heavy React trees usually show up as `style recalc` /

@@ -8,8 +8,8 @@
  *   - a section is `TITLE` (bold) + a dim one-line description of what it is;
  *   - its first indented line is the section's headline number;
  *   - aligned key/value blocks use `key  value`, with `·` joining value parts;
- *   - every ranked list (JS, GC suspects, React, frame-time breakdown) shares one
- *     column layout with a dim header row, so they read the same way.
+ *   - every ranked list (JS, FILES, GC suspects, React, frame-time breakdown) shares
+ *     one column layout with a dim header row, so they read the same way.
  *
  * Colour is subtle and only ever carries meaning (green = good / app code,
  * yellow·red = a problem, dim = units / locations / metadata, bold = structure)
@@ -94,6 +94,34 @@ function reflowCell(c: Colors, r: FrameDropReflow | null): string {
     : c.yellow(body);
 }
 
+/**
+ * Per-file anonymous share above which the `spread` cell calls it out. Purely a
+ * display rule: whether the *trace* is anonymous-heavy enough to distrust the
+ * function ranking is an analytical judgment, and verdict makes it once
+ * (`Verdict.anonBlindspot`).
+ */
+const ANON_DOMINATES_PCT = 50;
+
+/** The `file:line` cell — one spelling wherever a source location is shown. */
+const srcLoc = (x: { url: string; line: number }): string =>
+  `${shortenUrl(x.url)}:${x.line}`;
+
+/**
+ * How a file's cost is distributed across its functions — `4 fns`, and the
+ * anonymous share when it is big enough to be why the file is missing from the
+ * by-function table. `1 fn · 100% anon` reads as: one callback holds all of it,
+ * and it is filed under `(anonymous)` above.
+ */
+function spread(f: {
+  functionCount: number;
+  selfMs: number;
+  anonymousMs: number;
+}): string {
+  const fns = plural(f.functionCount, 'fn');
+  const anonPct = f.selfMs > 0 ? (f.anonymousMs / f.selfMs) * 100 : 0;
+  return anonPct >= ANON_DOMINATES_PCT ? `${fns} · ${pct0(anonPct)} anon` : fns;
+}
+
 /** Trim a source url to a filename (and one parent dir for app paths), no query. */
 function shortenUrl(url: string): string {
   const noQuery = url.split('?')[0] ?? url;
@@ -132,8 +160,8 @@ interface Ranked {
   /** First-party tag column; omit (undefined) for tables without one. */
   app?: boolean;
   name: string;
-  /** `file:line`, dim; omit for tables without a location column. */
-  location?: string;
+  /** Trailing dim column — `file:line`, or a per-row note; omit when unused. */
+  trailing?: string;
 }
 
 /**
@@ -143,13 +171,13 @@ interface Ranked {
 function ranked(
   c: Colors,
   rows: Ranked[],
-  headers: { metric: string; secondary: string; name: string },
+  headers: { metric: string; secondary: string; name: string; trailing?: string },
 ): string[] {
   const metricStrs = rows.map((r) => ms1(r.metricMs));
   const metricW = Math.max(headers.metric.length, ...metricStrs.map((s) => s.length));
   const secW = Math.max(headers.secondary.length, ...rows.map((r) => r.secondary.length));
   const hasApp = rows.some((r) => r.app !== undefined);
-  const hasLoc = rows.some((r) => r.location !== undefined);
+  const hasTrailing = rows.some((r) => r.trailing !== undefined);
   const nameW = Math.min(
     34,
     Math.max(headers.name.length, ...rows.map((r) => r.name.length)),
@@ -160,8 +188,8 @@ function ranked(
     headers.secondary.padStart(secW),
   ];
   if (hasApp) head.push('   ');
-  head.push(hasLoc ? headers.name.padEnd(nameW) : headers.name);
-  if (hasLoc) head.push('location');
+  head.push(hasTrailing ? headers.name.padEnd(nameW) : headers.name);
+  if (hasTrailing) head.push(headers.trailing ?? '');
 
   const lines = [`  ${c.dim(head.join('  '))}`];
   rows.forEach((r, i) => {
@@ -170,11 +198,43 @@ function ranked(
       r.secondary.padStart(secW),
     ];
     if (hasApp) cells.push(r.app ? c.green('APP') : '   ');
-    cells.push(hasLoc ? r.name.padEnd(nameW) : r.name);
-    if (hasLoc && r.location) cells.push(c.dim(r.location));
+    cells.push(hasTrailing ? r.name.padEnd(nameW) : r.name);
+    if (hasTrailing && r.trailing) cells.push(c.dim(r.trailing));
     lines.push(`  ${cells.join('  ')}`);
   });
   return lines;
+}
+
+/** A row shape every by-function table shares (`HotFunction` and its kin). */
+interface FunctionRow {
+  sharePct: number;
+  app: boolean;
+  functionName: string;
+  url: string;
+  line: number;
+}
+
+/**
+ * Every by-function table — JS, reflow run-up, GC allocators, memory suspects —
+ * has the same columns and differs only in what the metric is called, so the
+ * column names live here once rather than at each call site.
+ */
+function rankedFunctions(
+  c: Colors,
+  rows: (FunctionRow & { metricMs: number })[],
+  metric: string,
+): string[] {
+  return ranked(
+    c,
+    rows.map((f) => ({
+      metricMs: f.metricMs,
+      secondary: pct0(f.sharePct),
+      app: f.app,
+      name: f.functionName,
+      trailing: srcLoc(f),
+    })),
+    { metric, secondary: 'share', name: 'function', trailing: 'location' },
+  );
 }
 
 export function renderReport(
@@ -212,8 +272,19 @@ export function renderReport(
     const h = v.topAppHotspot;
     rows.push([
       'hotspot',
-      `${c.green(h.functionName)}  ${c.dim(`${shortenUrl(h.url)}:${h.line}`)} ` +
+      `${c.green(h.functionName)}  ${c.dim(srcLoc(h))} ` +
         `${c.dim(`· ${ms0(h.selfMs)} self`)}`,
+    ]);
+  }
+  // Populated only when it disagrees with `hotspot` (verdict makes that call) —
+  // and disagreement is the signal: cost buried in anonymous callbacks ranks low
+  // by function, high by file.
+  if (v.topAppFile) {
+    const hf = v.topAppFile;
+    rows.push([
+      'hot file',
+      `${c.green(shortenUrl(hf.url))} ` +
+        `${c.dim(`· ${ms0(hf.selfMs)} self · ${pct1(hf.sharePct)} of JS`)}`,
     ]);
   }
   for (const line of kv(c, rows)) out.push(line);
@@ -349,7 +420,7 @@ export function renderReport(
         const name = top.app ? c.green(top.functionName) : top.functionName;
         rows.push([
           'hottest',
-          `${name}  ${c.dim(`${shortenUrl(top.url)}:${top.line} · ${ms1(top.selfMs)} self`)}`,
+          `${name}  ${c.dim(`${srcLoc(top)} · ${ms1(top.selfMs)} self`)}`,
         ]);
       }
       rows.push(['gc', gcCell(c, d.gc)]);
@@ -409,7 +480,7 @@ export function renderReport(
       if (t.hotFunction) {
         const h = t.hotFunction;
         const name = h.app ? c.green(h.functionName) : h.functionName;
-        const loc = `${shortenUrl(h.url)}:${h.line}`;
+        const loc = srcLoc(h);
         const indent = ' '.repeat(2 + w + 2 + atStr.length + 2);
         out.push(
           `${indent}${c.dim('hottest:')} ${name}  ${c.dim(`${loc} · ${ms1(h.selfMs)} self`)}`,
@@ -445,16 +516,10 @@ export function renderReport(
         `  ${c.dim('run-up culprits — JS hottest just before forced layouts; a heuristic, batch reads before writes')}`,
       );
       const shown = debug ? reflow.culprits : reflow.culprits.slice(0, 5);
-      for (const line of ranked(
+      for (const line of rankedFunctions(
         c,
-        shown.map((s) => ({
-          metricMs: s.selfMs,
-          secondary: pct0(s.sharePct),
-          app: s.app,
-          name: s.functionName,
-          location: `${shortenUrl(s.url)}:${s.line}`,
-        })),
-        { metric: 'run-up', secondary: 'share', name: 'function' },
+        shown.map((s) => ({ ...s, metricMs: s.selfMs })),
+        'run-up',
       )) {
         out.push(line);
       }
@@ -499,16 +564,10 @@ export function renderReport(
         `  ${c.dim('suspected allocators — JS hottest just before scavenges; a heuristic, confirm with a heap profile')}`,
       );
       const shown = debug ? gc.suspectedAllocators : gc.suspectedAllocators.slice(0, 5);
-      for (const line of ranked(
+      for (const line of rankedFunctions(
         c,
-        shown.map((s) => ({
-          metricMs: s.preGcMs,
-          secondary: pct0(s.sharePct),
-          app: s.app,
-          name: s.functionName,
-          location: `${shortenUrl(s.url)}:${s.line}`,
-        })),
-        { metric: 'pre-gc', secondary: 'share', name: 'function' },
+        shown.map((s) => ({ ...s, metricMs: s.preGcMs })),
+        'pre-gc',
       )) {
         out.push(line);
       }
@@ -587,16 +646,10 @@ export function renderReport(
         `  ${c.dim('suspected sources — JS hottest while memory grew; a lead, confirm with a heap snapshot')}`,
       );
       const shown = debug ? mem.suspects : mem.suspects.slice(0, 5);
-      for (const line of ranked(
+      for (const line of rankedFunctions(
         c,
-        shown.map((s) => ({
-          metricMs: s.selfMs,
-          secondary: pct0(s.sharePct),
-          app: s.app,
-          name: s.functionName,
-          location: `${shortenUrl(s.url)}:${s.line}`,
-        })),
-        { metric: 'during', secondary: 'share', name: 'function' },
+        shown.map((s) => ({ ...s, metricMs: s.selfMs })),
+        'during',
       )) {
         out.push(line);
       }
@@ -642,21 +695,66 @@ export function renderReport(
         c.dim(`(idle ${ms0(prof.idleMs)})`),
     );
     const shown = debug ? prof.functions : prof.functions.slice(0, 15);
-    for (const line of ranked(
+    for (const line of rankedFunctions(
       c,
-      shown.map((fn) => ({
-        metricMs: fn.selfMs,
-        secondary: pct0(fn.sharePct),
-        app: fn.app,
-        name: fn.functionName,
-        location: `${shortenUrl(fn.url)}:${fn.line}`,
-      })),
-      { metric: 'self', secondary: 'share', name: 'function' },
+      shown.map((fn) => ({ ...fn, metricMs: fn.selfMs })),
+      'self',
     )) {
       out.push(line);
     }
     if (prof.functions.length > shown.length) {
       moreLine(prof.functions.length - shown.length);
+    }
+    // A signpost at the point of use, not a restatement: VERDICT's notes carry
+    // the full caveat, and this table is where the reader is misled by it.
+    if (v.anonBlindspot) {
+      const b = v.anonBlindspot;
+      out.push(
+        `  ${c.yellow(
+          `${ms0(b.selfMs)} (${pct0(b.sharePct)}) of this is in (anonymous) rows — ` +
+            `this ranking is under-reporting; read FILES below.`,
+        )}`,
+      );
+    }
+  }
+
+  // ── FILES — the same self-time by source file: which subsystem is hot. ────
+  if (prof && prof.files.app.length + prof.files.dep.length > 0) {
+    blank();
+    heading('FILES', 'self-time by source file');
+    out.push(
+      `  ${ms0(prof.appMs)} app code ${c.dim(`(${pct0(prof.appSharePct)})`)} · ` +
+        `${ms0(prof.depMs)} dependencies ${c.dim(`(${pct0(prof.depSharePct)})`)} ` +
+        c.dim(`· ${plural(prof.fileCount, 'file')}`),
+    );
+
+    // Two lists rather than one merged ranking: "which of my files" and "which
+    // dependency" are separate decisions, and a merged list buries app files
+    // under engine chunks exactly when the engine dominates. `app` is the same
+    // first-party test the APP tag uses — on a fully bundled production build
+    // it can't separate vendor code, so read the split as a hint, not a fact.
+    const groups: [group: typeof prof.files.app, label: string][] = [
+      [prof.files.app, 'app code — first-party by source path'],
+      [prof.files.dep, 'dependencies — engine/library code; the lever is fewer calls in'],
+    ];
+    for (const [group, label] of groups) {
+      if (group.length === 0) continue;
+      const shown = debug ? group : group.slice(0, 10);
+      blank();
+      out.push(`  ${c.dim(label)}`);
+      for (const line of ranked(
+        c,
+        shown.map((fl) => ({
+          metricMs: fl.selfMs,
+          secondary: pct1(fl.sharePct),
+          name: shortenUrl(fl.url),
+          trailing: spread(fl),
+        })),
+        { metric: 'self', secondary: 'share', name: 'file', trailing: 'spread' },
+      )) {
+        out.push(line);
+      }
+      if (group.length > shown.length) moreLine(group.length - shown.length);
     }
   }
 

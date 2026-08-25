@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "trace": "memory-growth.trace.json.gz",
   "verdict": {
     "smooth": true,
@@ -22,8 +22,10 @@
       "functionName": "collectRenderablesSimple",
       "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
       "line": 13,
-      "selfMs": 25.468000000000018
+      "selfMs": 25.468
     },
+    "topAppFile": null,
+    "anonBlindspot": null,
     "reflow": null,
     "gc": null,
     "memory": {
@@ -124,227 +126,272 @@
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 13,
         "col": 34709,
-        "selfMs": 25.468000000000018,
-        "sharePct": 15.51479412499316,
-        "app": true
+        "app": true,
+        "selfMs": 25.468,
+        "sharePct": 15.514794124993148
       },
       {
         "functionName": "_getGlobalBoundsRecursive",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 13,
         "col": 38275,
-        "selfMs": 24.329000000000022,
-        "sharePct": 14.82092925502429,
-        "app": true
+        "app": true,
+        "selfMs": 24.329,
+        "sharePct": 14.820929255024277
       },
       {
         "functionName": "updateLayout",
         "url": "https://orb-ball-frontend.onrender.com/assets/index-CyoXiGX1.js",
         "line": 896,
         "col": 35964,
-        "selfMs": 22.973000000000006,
-        "sharePct": 13.994870638977055,
-        "app": true
+        "app": true,
+        "selfMs": 22.973,
+        "sharePct": 13.994870638977053
       },
       {
         "functionName": "break",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 47,
         "col": 2526,
-        "selfMs": 5.123000000000001,
-        "sharePct": 3.120868945435052,
-        "app": true
+        "app": true,
+        "selfMs": 5.123,
+        "sharePct": 3.1208689454350518
       },
       {
         "functionName": "_updateSize",
         "url": "https://orb-ball-frontend.onrender.com/assets/index-CyoXiGX1.js",
         "line": 896,
         "col": 35467,
+        "app": true,
         "selfMs": 4.869,
-        "sharePct": 2.9661352518686837,
-        "app": true
+        "sharePct": 2.9661352518686837
       },
       {
         "functionName": "(anonymous)",
         "url": "https://orb-ball-frontend.onrender.com/assets/index-CyoXiGX1.js",
         "line": 1397,
         "col": 9714,
-        "selfMs": 4.761000000000001,
-        "sharePct": 2.9003429727144807,
-        "app": true
+        "app": true,
+        "selfMs": 4.761,
+        "sharePct": 2.90034297271448
       },
       {
         "functionName": "addRenderable",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 813,
         "col": 13888,
+        "app": true,
         "selfMs": 4.42,
-        "sharePct": 2.6926099431627812,
-        "app": true
+        "sharePct": 2.6926099431627812
       },
       {
         "functionName": "connectPort",
         "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/proxy.js",
         "line": 1,
         "col": 1141,
-        "selfMs": 4.388000000000001,
-        "sharePct": 2.673115934524499,
-        "app": false
+        "app": false,
+        "selfMs": 4.388,
+        "sharePct": 2.673115934524499
       },
       {
         "functionName": "(anonymous)",
         "url": "https://orb-ball-frontend.onrender.com/assets/index-CyoXiGX1.js",
         "line": 1866,
         "col": 3647,
-        "selfMs": 3.9450000000000003,
-        "sharePct": 2.4032457524382744,
-        "app": true
+        "app": true,
+        "selfMs": 3.945,
+        "sharePct": 2.4032457524382744
       },
       {
         "functionName": "n1",
         "url": "https://orb-ball-frontend.onrender.com/assets/index-CyoXiGX1.js",
         "line": 895,
         "col": 54166,
+        "app": true,
         "selfMs": 3.605,
-        "sharePct": 2.196121910656522,
-        "app": true
+        "sharePct": 2.196121910656522
       },
       {
         "functionName": "_tick",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 13,
         "col": 67923,
-        "selfMs": 3.4050000000000002,
-        "sharePct": 2.0742843566672557,
-        "app": true
+        "app": true,
+        "selfMs": 3.405,
+        "sharePct": 2.0742843566672557
       },
       {
         "functionName": "(anonymous)",
         "url": "https://orb-ball-frontend.onrender.com/assets/index-CyoXiGX1.js",
         "line": 2407,
         "col": 7784,
-        "selfMs": 3.3529999999999993,
-        "sharePct": 2.042606592630046,
-        "app": true
+        "app": true,
+        "selfMs": 3.353,
+        "sharePct": 2.0426065926300465
       },
       {
         "functionName": "addRenderable",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 1054,
         "col": 20164,
-        "selfMs": 2.3799999999999994,
-        "sharePct": 1.4498668924722664,
-        "app": true
+        "app": true,
+        "selfMs": 2.38,
+        "sharePct": 1.4498668924722669
       },
       {
         "functionName": "updateGpuContext",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 261,
         "col": 17388,
+        "app": true,
         "selfMs": 2.082,
-        "sharePct": 1.2683289370282602,
-        "app": true
+        "sharePct": 1.2683289370282602
       },
       {
         "functionName": "F_",
         "url": "https://orb-ball-frontend.onrender.com/assets/index-CyoXiGX1.js",
         "line": 1397,
         "col": 2401,
-        "selfMs": 1.7589999999999997,
-        "sharePct": 1.0715612873355953,
-        "app": true
+        "app": true,
+        "selfMs": 1.759,
+        "sharePct": 1.0715612873355955
       },
       {
         "functionName": "moveTo",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 261,
         "col": 44910,
+        "app": true,
         "selfMs": 1.544,
-        "sharePct": 0.9405859167971344,
-        "app": true
+        "sharePct": 0.9405859167971344
       },
       {
         "functionName": "packQuadAttributes",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 261,
         "col": 907,
+        "app": true,
         "selfMs": 1.504,
-        "sharePct": 0.9162184059992812,
-        "app": true
+        "sharePct": 0.9162184059992812
       },
       {
         "functionName": "_updateRenderGroups",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 1054,
         "col": 26538,
-        "selfMs": 1.4900000000000002,
-        "sharePct": 0.9076897772200326,
-        "app": true
+        "app": true,
+        "selfMs": 1.49,
+        "sharePct": 0.9076897772200325
       },
       {
         "functionName": "getGlSource",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 1339,
         "col": 21697,
-        "selfMs": 1.2040000000000002,
-        "sharePct": 0.7334620750153821,
-        "app": true
+        "app": true,
+        "selfMs": 1.204,
+        "sharePct": 0.733462075015382
       },
       {
         "functionName": "(anonymous)",
         "url": "https://orb-ball-frontend.onrender.com/assets/index-CyoXiGX1.js",
         "line": 2098,
         "col": 5824,
+        "app": true,
         "selfMs": 1.199,
-        "sharePct": 0.7304161361656504,
-        "app": true
+        "sharePct": 0.7304161361656504
       },
       {
         "functionName": "handleDisconnect",
         "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/proxy.js",
         "line": 1,
         "col": 1037,
+        "app": false,
         "selfMs": 1.149,
-        "sharePct": 0.6999567476683338,
-        "app": false
+        "sharePct": 0.6999567476683338
       },
       {
         "functionName": "bindSource",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 1339,
         "col": 16536,
+        "app": true,
         "selfMs": 1.067,
-        "sharePct": 0.6500033505327347,
-        "app": true
+        "sharePct": 0.6500033505327347
       },
       {
         "functionName": "bind",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 1056,
         "col": 8255,
-        "selfMs": 1.0470000000000002,
-        "sharePct": 0.6378195951338081,
-        "app": true
+        "app": true,
+        "selfMs": 1.047,
+        "sharePct": 0.6378195951338081
       },
       {
         "functionName": "R9",
         "url": "https://orb-ball-frontend.onrender.com/assets/index-CyoXiGX1.js",
         "line": 1866,
         "col": 2609,
+        "app": true,
         "selfMs": 1.024,
-        "sharePct": 0.6238082764250424,
-        "app": true
+        "sharePct": 0.6238082764250424
       },
       {
         "functionName": "execute",
         "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
         "line": 813,
         "col": 3967,
+        "app": true,
         "selfMs": 1.004,
-        "sharePct": 0.611624521026116,
-        "app": true
+        "sharePct": 0.611624521026116
       }
-    ]
+    ],
+    "files": {
+      "app": [
+        {
+          "url": "https://orb-ball-frontend.onrender.com/assets/pixi-DRolKATm.js",
+          "selfMs": 98.551,
+          "sharePct": 60.03606391598083,
+          "app": true,
+          "functionCount": 92,
+          "anonymousMs": 0.128
+        },
+        {
+          "url": "https://orb-ball-frontend.onrender.com/assets/index-CyoXiGX1.js",
+          "selfMs": 59.903,
+          "sharePct": 36.49217498309504,
+          "app": true,
+          "functionCount": 51,
+          "anonymousMs": 16.001
+        }
+      ],
+      "dep": [
+        {
+          "url": "chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/proxy.js",
+          "selfMs": 5.537,
+          "sharePct": 3.3730726821928325,
+          "app": false,
+          "functionCount": 2,
+          "anonymousMs": 0
+        },
+        {
+          "url": "chrome-extension://dlkffcaaoccbofklocbjcmppahjjboce/inject/index.js",
+          "selfMs": 0.162,
+          "sharePct": 0.09868841873130556,
+          "app": false,
+          "functionCount": 1,
+          "anonymousMs": 0
+        }
+      ]
+    },
+    "appMs": 158.454,
+    "appSharePct": 96.52823889907587,
+    "depMs": 5.699,
+    "depSharePct": 3.4717611009241383,
+    "fileCount": 4,
+    "anonymousMs": 16.129,
+    "anonymousSharePct": 9.825589541464366
   },
   "tasks": {
     "mainTid": 10134568,
